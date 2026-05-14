@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/landing/Logo.png" />
+    <title>CredLayer AI | Your Reputation At Work</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            black: '#000000',
+                            white: '#ffffff',
+                            gray: '#f5f5f5',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --nav-height: 80px;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .marketing-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2.5rem;
+        }
+
+        /* Etherfuse-style Typography */
+        .hero-title {
+            font-size: clamp(3.5rem, 9vw, 8rem);
+            font-weight: 800;
+            line-height: 0.92;
+            letter-spacing: -0.05em;
+            color: #000;
+        }
+
+        .btn-pill {
+            border-radius: 9999px;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            items-center: center;
+            justify-content: center;
+        }
+
+        .btn-pill:hover {
+            transform: translateY(-1px);
+        }
+
+        .floating-logo-box {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-link {
+            font-size: 0.9375rem;
+            font-weight: 500;
+            color: #111;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: opacity 0.2s;
+        }
+
+        .nav-link:hover {
+            opacity: 0.6;
+        }
+
+        /* Stacked Cards Simulation (Custom for Cinematic Feel) */
+        .card-stack-section {
+            position: relative;
+            padding: 100px 0;
+        }
+
+        .stacked-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 24px;
+            transition: border-color 0.4s ease, background-color 0.4s ease;
+        }
+
+        /* Smooth Scroll Setup */
+        html.lenis {
+            height: auto;
+        }
+
+        .lenis.lenis-smooth {
+            scroll-behavior: auto;
+        }
+
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="bg-white">
+    <div class="min-h-screen flex flex-col">
+        <!-- Navigation -->
+        <header class="sticky top-0 z-50 h-20 border-b border-gray-100 bg-white/80 backdrop-blur-xl">
+            <div class="marketing-container h-full">
+                <nav class="relative flex h-full items-center justify-between">
+                    <!-- Logo Section -->
+                    <a href="/" class="flex items-center z-10">
+                        <img src="/landing/Logo.png" alt="CredLayer AI" class="h-10 w-auto" />
+                    </a>
+
+                    <!-- Desktop Nav Links (Centrado absoluto para diseño premium) -->
+                    <div class="absolute left-1/2 -translate-x-1/2 hidden lg:flex items-center gap-8">
+                        <a href="/community" class="nav-link">Community</a>
+                        <a href="/about" class="nav-link">About Us</a>
+                    </div>
+
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center gap-4 z-10">
+                        <a href="/launch"
+                            class="btn-pill border border-gray-200 px-7 py-3 text-sm hover:bg-gray-50">Launch App</a>
+                        <a href="/connect" class="btn-pill bg-black px-7 py-3 text-sm text-white hover:bg-zinc-800">Get
+                            Started</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <main class="flex-grow">
+            <!-- Hero Section (Replicating Etherfuse Precisely) -->
+            <section id="mpx-hero" class="relative flex min-h-[90vh] w-full items-center overflow-hidden py-20">
+                <div class="marketing-container flex w-full flex-col lg:flex-row lg:items-center">
+
+                    <div class="z-10 flex flex-col items-start lg:w-3/5">
+                        <div
+                            class="hero-anim mb-6 inline-flex items-center gap-2 rounded-full bg-zinc-100 px-4 py-1.5 text-sm font-semibold">
+                            <span class="flex h-2 w-2 rounded-full bg-black"></span>
+                            <span>New Financial Era</span>
+                        </div>
+
+                        <h1 class="hero-anim hero-title mb-10">
+                            Your Reputation <br /> At Work
+                        </h1>
+
+                        <div class="hero-anim mb-14 space-y-6">
+                            <div class="inline-block border-b-2 border-zinc-900 pb-1">
+                                <span class="text-2xl font-bold tracking-tight text-zinc-900">Idle reputation is dead
+                                    weight.</span>
+                            </div>
+                            <p class="max-w-xl text-xl leading-relaxed text-zinc-600">
+                                CredLayer AI transforms your payment activity into a portable and verifiable financial
+                                reputation in Web3 on Ethereum.
+                            </p>
+                        </div>
+
+                        <div class="flex flex-wrap gap-5">
+                            <a href="/connect"
+                                class="hero-anim group flex items-center gap-3 rounded-xl bg-black px-12 py-6 text-xl font-bold text-white transition-colors hover:bg-zinc-800">
+                                Explore Reputation <span class="transition-transform group-hover:translate-x-1">→</span>
+                            </a>
+                            <a href="#"
+                                class="hero-anim rounded-xl bg-zinc-100 px-12 py-6 text-xl font-bold text-black transition-colors hover:bg-zinc-200">
+                                Book a Demo
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Right Content: Cinematic Visual -->
+                    <div class="relative mt-24 flex justify-center lg:mt-0 lg:w-2/5 lg:justify-end">
+                        <div class="relative w-full max-w-[600px]">
+                            <!-- Main Visual Asset -->
+                            <div
+                                class="aspect-square w-full rounded-[40px] bg-zinc-50 overflow-hidden border border-zinc-100 shadow-sm">
+                                <img src="/landing/jaguar-avatar.png" alt="Warrior"
+                                    class="h-full w-full object-cover contrast-[1.05] grayscale-[0.05]" />
+                            </div>
+
+                            <!-- The Iconic Floating Logo Box -->
+                            <div class="absolute -right-8 top-12 floating-logo-box">
+                                <div class="flex h-16 w-16 items-center justify-center bg-black rounded-lg">
+                                    <div class="h-6 w-6 rounded-full bg-white"></div>
+                                </div>
+                            </div>
+
+                            <!-- Additional Floating Info -->
+                            <div
+                                class="absolute -left-12 bottom-12 rounded-2xl bg-white/90 p-6 shadow-xl backdrop-blur-md border border-white/20">
+                                <div class="flex flex-col gap-2">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Trust
+                                        Score</span>
+                                    <span class="text-3xl font-black text-black">98.4</span>
+                                    <div class="h-1.5 w-32 rounded-full bg-zinc-100">
+                                        <div class="h-full w-[98%] rounded-full bg-black"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Product Pillars Section -->
+            <section class="card-stack-section py-32 bg-zinc-50/50">
+                <div class="marketing-container">
+                    <div class="mb-20">
+                        <h2 class="text-5xl font-extrabold tracking-tight">Built for the future.</h2>
+                        <p class="mt-4 text-xl text-zinc-500">Powerful tools for portable financial reputation.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-10 md:grid-cols-3">
+                        <!-- Card 1 -->
+                        <div class="stacked-card group hover:border-black">
+                            <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-xl bg-black text-white">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M2 12h20" />
+                                </svg>
+                            </div>
+                            <h3 class="mb-4 text-2xl font-bold">P2P Payments</h3>
+                            <p class="text-zinc-500 leading-relaxed">
+                                Send and receive assets with the security of audited smart contracts.
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="stacked-card group hover:border-black">
+                            <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-xl bg-black text-white">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 10h18M7 15h1M11 15h1M15 15h1" />
+                                </svg>
+                            </div>
+                            <h3 class="mb-4 text-2xl font-bold">Microcréditos ENS</h3>
+                            <p class="text-zinc-500 leading-relaxed">
+                                Access liquidity based on your ENS history and on-chain reputation.
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="stacked-card group hover:border-black">
+                            <div class="mb-8 flex h-14 w-14 items-center justify-center rounded-xl bg-black text-white">
+                                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16v16H4zM4 9h16M9 4v16" />
+                                </svg>
+                            </div>
+                            <h3 class="mb-4 text-2xl font-bold">Reputation Vault</h3>
+                            <p class="text-zinc-500 leading-relaxed">
+                                Your history is yours. Take it to any dApp in the CredLayer ecosystem.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-zinc-800 py-20 bg-black text-white">
+            <div class="marketing-container">
+                <div class="flex flex-col items-start justify-between gap-12 md:flex-row">
+                    <div class="max-w-xs">
+                        <img src="/landing/Logo.png" alt="CredLayer" class="mb-8 h-8 w-auto brightness-0 invert" />
+                        <p class="text-zinc-400 text-sm leading-relaxed">
+                            CredLayer AI is building the portable financial reputation infrastructure for the next
+                            billion users.
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-16 md:grid-cols-3">
+                        <div class="flex flex-col gap-4">
+                            <span class="text-xs font-bold uppercase tracking-widest text-zinc-500">Product</span>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Payments</a>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Lending</a>
+                            <a href="#" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">ENS
+                                Auth</a>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <span class="text-xs font-bold uppercase tracking-widest text-zinc-500">Company</span>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">About</a>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Blog</a>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Careers</a>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <span class="text-xs font-bold uppercase tracking-widest text-zinc-500">Social</span>
+                            <a href="#" class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">X
+                                (Twitter)</a>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">GitHub</a>
+                            <a href="#"
+                                class="text-sm font-medium text-zinc-300 hover:text-white transition-colors">Discord</a>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="mt-20 flex items-center justify-between border-t border-zinc-800 pt-8 text-xs text-zinc-500">
+                    <p>© 2026 CredLayer AI. All rights reserved.</p>
+                    <div class="flex gap-6">
+                        <a href="#" class="hover:text-white transition-colors">Privacy</a>
+                        <a href="#" class="hover:text-white transition-colors">Terms</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts for Smoothness -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Initialize Lenis for smooth scrolling
+        const lenis = new Lenis();
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // GSAP Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Content Fade In
+        gsap.from(".hero-anim", {
+            y: 40,
+            opacity: 0,
+            duration: 1.2,
+            stagger: 0.1,
+            ease: "power4.out",
+            delay: 0.2
+        });
+
+        // Hero Visual Entrance
+        gsap.from("#mpx-hero .relative", {
+            x: 60,
+            opacity: 0,
+            duration: 1.5,
+            ease: "power4.out",
+            delay: 0.5
+        });
+
+        // Cards Animation
+        gsap.from(".stacked-card", {
+            scrollTrigger: {
+                trigger: ".card-stack-section",
+                start: "top 80%"
+            },
+            y: 60,
+            opacity: 0,
+            duration: 1,
+            stagger: 0.2,
+            ease: "power3.out"
+        });
+    </script>
+</body>
+
+</html>

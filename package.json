@@ -1,0 +1,47 @@
+{
+  "name": "creedlayerai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.44.0",
+    "buffer": "^6.0.3",
+    "clsx": "^2.1.1",
+    "ethers": "^5.8.0",
+    "framer-motion": "^10.18.0",
+    "gsap": "^3.15.0",
+    "jspdf": "^4.2.1",
+    "lenis": "^1.3.23",
+    "lucide-react": "^0.263.1",
+    "process": "^0.11.10",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-hot-toast": "^2.6.0",
+    "react-icons": "^5.6.0",
+    "react-router-dom": "^6.30.3",
+    "recharts": "^2.15.4",
+    "tailwind-merge": "^1.14.0",
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.1",
+    "vite": "^8.0.12"
+  }
+}

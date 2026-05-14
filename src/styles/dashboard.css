@@ -1,0 +1,635 @@
+.membership-dashboard {
+    background: #ffffff;
+    color: #111111;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── HERO TWO-COLUMN ── */
+.dash-hero {
+    padding: 80px 0 120px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.dash-hero__inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+/* LEFT */
+.dash-hero__left {
+    flex: 0 0 55%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    z-index: 10;
+}
+
+.dash-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f4f4f5;
+    color: #111111;
+    border: 1px solid #e4e4e7;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.dash-hero__title {
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+    color: #000000;
+    margin: 0;
+}
+
+.dash-hero__subtitle {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: #52525b;
+    max-width: 520px;
+    margin: 0;
+}
+
+.dash-hero__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.dash-hero__chip {
+    background: #000000;
+    border-radius: 16px;
+    padding: 0.8rem 1.2rem;
+    min-width: 130px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.dash-hero__chip-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #a1a1aa;
+}
+
+.dash-hero__chip-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.dash-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.dash-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: #000000;
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    padding: 0.85rem 1.6rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+    text-decoration: none;
+}
+
+.dash-hero__btn:hover {
+    background: #27272a;
+    transform: translateY(-1px);
+}
+
+.dash-hero__btn--ghost {
+    background: #f4f4f5;
+    color: #111111;
+    border: 1px solid #e4e4e7;
+}
+
+.dash-hero__btn--ghost:hover {
+    background: #e4e4e7;
+}
+
+/* RIGHT */
+.dash-hero__right {
+    flex: 0 0 45%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.dash-hero__img-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+}
+
+.dash-hero__img {
+    width: 125%;
+    height: 150%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 40px;
+    background: #f4f4f5;
+    border: 1px solid #e4e4e7;
+    display: block;
+    contrast-filter: contrast(1.05);
+}
+
+/* Floating logo box – top right */
+.dash-hero__float-logo {
+    position: absolute;
+    top: 3rem;
+    right: -2.5rem;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.08);
+}
+
+.dash-hero__float-logo-inner {
+    width: 64px;
+    height: 64px;
+    background: #000000;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dash-hero__float-logo-dot {
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    border-radius: 50%;
+}
+
+/* Trust Score card – bottom left */
+.dash-hero__trust-card {
+    position: absolute;
+    bottom: 3rem;
+    left: -3rem;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 160px;
+}
+
+.dash-hero__trust-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #71717a;
+}
+
+.dash-hero__trust-value {
+    font-size: 2.25rem;
+    font-weight: 900;
+    color: #000000;
+    line-height: 1;
+}
+
+.dash-hero__trust-bar {
+    width: 120px;
+    height: 6px;
+    background: #e5e5e5;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.dash-hero__trust-bar-fill {
+    width: 98%;
+    height: 100%;
+    background: #000000;
+    border-radius: 3px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .dash-hero__inner {
+        flex-direction: column;
+        gap: 3rem;
+    }
+
+    .dash-hero__left,
+    .dash-hero__right {
+        flex: none;
+        width: 100%;
+    }
+
+    .dash-hero__right {
+        justify-content: center;
+    }
+
+    .dash-hero__img-wrapper {
+        max-width: 420px;
+    }
+
+    .dash-hero__float-logo {
+        right: -1rem;
+    }
+
+    .dash-hero__trust-card {
+        left: -1rem;
+    }
+}
+
+
+.membership-section {
+    padding: 120px 0;
+}
+
+.membership-dashboard__hero {
+    padding-top: 80px;
+    padding-bottom: 120px;
+}
+
+.membership-section-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: #111111;
+}
+
+.membership-section-subtitle {
+    color: #71717a;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 700px;
+}
+
+.membership-dashboard-hero {
+    background: #ffffff;
+}
+
+.membership-dashboard-hero__title {
+    font-size: clamp(4rem, 8vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.06em;
+    font-weight: 900;
+    color: #000000;
+    max-width: 900px;
+}
+
+.membership-dashboard-hero__subtitle {
+    color: #52525b;
+    font-size: 1.2rem;
+    line-height: 1.8;
+    max-width: 720px;
+    margin-top: 2rem;
+}
+
+.membership-dashboard-hero__badge,
+.membership-module-card__badge,
+.membership-update-card__badge,
+.membership-quick-actions__badge,
+.membership-flow__badge,
+.membership-metrics__tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f4f4f5;
+    color: #111111;
+    border-radius: 9999px;
+    padding: 0.55rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    border: 1px solid #e4e4e7;
+}
+
+.membership-module-card,
+.membership-update-card,
+.membership-quick-actions__card,
+.membership-flow__step,
+.membership-metrics__card {
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 32px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s ease;
+}
+
+.membership-module-card:hover,
+.membership-update-card:hover,
+.membership-quick-actions__card:hover,
+.membership-flow__step:hover,
+.membership-metrics__card:hover {
+    transform: translateY(-4px);
+    border-color: #111111;
+}
+
+.membership-module-card h3,
+.membership-update-card h3,
+.membership-flow__content h3,
+.membership-quick-actions__body h3,
+.membership-metrics__card h3 {
+    color: #111111;
+    font-weight: 700;
+}
+
+.membership-module-card p,
+.membership-update-card p,
+.membership-flow__content p,
+.membership-quick-actions__body p,
+.membership-metrics__card p,
+.membership-metrics__stat-hint {
+    color: #71717a;
+    line-height: 1.8;
+}
+
+.membership-hero__cta,
+.membership-callout__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #000000;
+    color: #ffffff;
+    border-radius: 18px;
+    padding: 1rem 1.6rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.membership-hero__cta:hover,
+.membership-callout__cta:hover {
+    background: #27272a;
+    transform: translateY(-1px);
+}
+
+.membership-hero__cta--ghost,
+.membership-callout__cta--ghost {
+    background: #f4f4f5;
+    color: #111111;
+    border: 1px solid #e4e4e7;
+}
+
+.membership-dashboard-hero__chip {
+    background: #fafafa;
+    border: 1px solid #e4e4e7;
+    border-radius: 20px;
+    padding: 1rem 1.25rem;
+    min-width: 180px;
+}
+
+.membership-dashboard-hero__chip-label {
+    color: #000000;
+    font-size: 0.85rem;
+}
+
+.membership-dashboard-hero__chip-value {
+    color: #111111;
+    font-weight: 700;
+    margin-top: 0.35rem;
+}
+
+.membership-metrics__stat {
+    background: #fafafa;
+    border-radius: 20px;
+    padding: 1rem;
+    border: 1px solid #f1f1f1;
+}
+
+.membership-metrics__stat-label {
+    color: #71717a;
+}
+
+.membership-metrics__stat-value {
+    color: #111111;
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.membership-quick-actions__icon,
+.membership-flow__icon,
+.membership-metrics__stat-icon {
+    background: #111111;
+    color: white;
+    border-radius: 18px;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.membership-callout {
+    background: #fafafa;
+    border: 1px solid #e4e4e7;
+    border-radius: 40px;
+    padding: 5rem;
+    margin-top: 120px;
+}
+
+.membership-callout h2 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    line-height: 1;
+    letter-spacing: -0.05em;
+    font-weight: 900;
+    color: #111111;
+}
+
+.membership-callout p {
+    color: #71717a;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    max-width: 800px;
+    margin-top: 1.5rem;
+}
+
+.membership-dashboard-hero__floating-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    width: fit-content;
+}
+
+.membership-dashboard-hero__floating-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #71717a;
+    text-transform: uppercase;
+}
+
+.membership-dashboard-hero__progress {
+    width: 100%;
+    height: 6px;
+    background: #e5e5e5;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.membership-dashboard-hero__progress-fill {
+    width: 98%;
+    height: 100%;
+    background: #000000;
+    border-radius: 3px;
+}
+
+/* ── PRODUCT PILLARS SECTION ── */
+.card-stack-section {
+    padding: 8rem 0;
+    background: #fafafa;
+}
+
+.marketing-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+.card-stack-section .mb-20 {
+    margin-bottom: 5rem;
+}
+
+.text-5xl {
+    font-size: 3rem;
+}
+
+.font-extrabold {
+    font-weight: 800;
+}
+
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+
+.mt-4 {
+    margin-top: 1rem;
+}
+
+.text-xl {
+    font-size: 1.25rem;
+}
+
+.text-zinc-500 {
+    color: #71717a;
+}
+
+.grid {
+    display: grid;
+    gap: 2.5rem;
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+    .md\:grid-cols-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.stacked-card {
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 24px;
+    padding: 2.5rem;
+    transition: border-color 0.3s ease, transform 0.25s ease;
+}
+
+.stacked-card:hover {
+    border-color: #111111;
+    transform: translateY(-4px);
+}
+
+.stacked-card .mb-8 {
+    margin-bottom: 2rem;
+    width: 56px;
+    height: 56px;
+    background: #111111;
+    color: #ffffff;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stacked-card .mb-4 {
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #111111;
+}
+
+.stacked-card p {
+    color: #71717a;
+    line-height: 1.8;
+    font-size: 1rem;
+}
+
+/* ── QUICK ACTIONS GRID ── */
+.membership-quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.membership-quick-actions__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 2rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.membership-quick-actions__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #111111;
+    margin-top: auto;
+}
+
+.membership-quick-actions__body h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.membership-section-header {
+    margin-bottom: 3rem;
+}
+
+.membership-section {
+    padding: 8rem 2.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
