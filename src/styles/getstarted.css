@@ -1,0 +1,695 @@
+/* ─────────────────────────────────────────────
+   getstarted.css  —  Get Started / Onboarding
+   Cinematic B&W Design System
+───────────────────────────────────────────── */
+
+/* ── Layout ── */
+.gs-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    color: #000000;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+.gs-page *,
+.gs-page *::before,
+.gs-page *::after {
+    box-sizing: border-box;
+}
+
+/* ── Hero Section ── */
+.gs-hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+    padding: 8rem 2.5rem 5rem;
+    overflow: hidden;
+    text-align: center;
+    background: #ffffff;
+}
+
+.gs-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.gs-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.gs-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    border-radius: 9999px;
+    background: #f4f4f5;
+    border: 1px solid #e4e4e7;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #18181b;
+    letter-spacing: 0.01em;
+}
+
+.gs-chip-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #000000;
+    animation: gsPulse 2s ease-in-out infinite;
+}
+
+@keyframes gsPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+.gs-hero h1 {
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+    color: #000000;
+    margin: 0;
+}
+
+.gs-hero p {
+    font-size: 1.2rem;
+    line-height: 1.65;
+    color: #71717a;
+    max-width: 540px;
+    margin: 0;
+}
+
+/* ── Form Section ── */
+.gs-form-section {
+    position: relative;
+    padding: 0 2.5rem 6rem;
+    display: flex;
+    justify-content: center;
+}
+
+.gs-form-card {
+    width: 100%;
+    max-width: 640px;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 28px;
+    padding: 3rem;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 20px 60px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.gs-form-card:hover {
+    border-color: #d4d4d8;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.04),
+        0 30px 80px rgba(0, 0, 0, 0.08);
+}
+
+.gs-form-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #f4f4f5;
+}
+
+.gs-form-header-left h2 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #000000;
+    margin: 0 0 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.gs-form-header-left p {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+    font-weight: 500;
+    margin: 0;
+}
+
+.gs-step-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.gs-step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e4e4e7;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gs-step-dot--active {
+    background: #000000;
+    width: 24px;
+    border-radius: 999px;
+}
+
+.gs-step-dot--done {
+    background: #000000;
+}
+
+/* ── Form Fields ── */
+.gs-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.gs-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.gs-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #18181b;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.gs-label-hint {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #a1a1aa;
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: 0.5rem;
+}
+
+.gs-input {
+    width: 100%;
+    padding: 0.9rem 1.25rem;
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    color: #18181b;
+    background: #fafafa;
+    border: 1.5px solid #e4e4e7;
+    border-radius: 14px;
+    outline: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.gs-input::placeholder {
+    color: #a1a1aa;
+    font-weight: 400;
+}
+
+.gs-input:hover {
+    border-color: #d4d4d8;
+    background: #f9f9f9;
+}
+
+.gs-input:focus {
+    border-color: #000000;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.gs-input--error {
+    border-color: #ef4444 !important;
+    background: #fef2f2;
+}
+
+.gs-input--error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.gs-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+}
+
+.gs-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1.1rem center;
+    background-size: 16px;
+    padding-right: 2.75rem;
+}
+
+.gs-error-msg {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+}
+
+/* ── Row layout for side-by-side fields ── */
+.gs-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+/* ── Checkbox / Terms ── */
+.gs-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-radius: 14px;
+    background: #fafafa;
+    border: 1px solid #f4f4f5;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.gs-checkbox-row:hover {
+    border-color: #e4e4e7;
+    background: #f4f4f5;
+}
+
+.gs-checkbox {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d4d4d8;
+    border-radius: 6px;
+    background: #ffffff;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    margin-top: 2px;
+}
+
+.gs-checkbox:checked {
+    background: #000000;
+    border-color: #000000;
+}
+
+.gs-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 6px;
+    width: 5px;
+    height: 9px;
+    border: solid #ffffff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.gs-checkbox:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.gs-checkbox-text {
+    font-size: 0.875rem;
+    color: #52525b;
+    line-height: 1.5;
+}
+
+.gs-checkbox-text a {
+    color: #000000;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s;
+}
+
+.gs-checkbox-text a:hover {
+    opacity: 0.6;
+}
+
+/* ── Buttons ── */
+.gs-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.gs-btn-primary {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: #ffffff;
+    background: #000000;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: -0.01em;
+}
+
+.gs-btn-primary:hover {
+    background: #18181b;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.gs-btn-primary:active {
+    transform: translateY(0);
+}
+
+.gs-btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.gs-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: #18181b;
+    background: transparent;
+    border: 1.5px solid #e4e4e7;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.gs-btn-secondary:hover {
+    border-color: #000000;
+    background: #fafafa;
+}
+
+/* ── Features Row below form ── */
+.gs-features {
+    padding: 0 2.5rem 6rem;
+    display: flex;
+    justify-content: center;
+}
+
+.gs-features-grid {
+    width: 100%;
+    max-width: 960px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.gs-feature-card {
+    padding: 2rem;
+    border-radius: 20px;
+    background: #fafafa;
+    border: 1px solid #f4f4f5;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gs-feature-card:hover {
+    border-color: #e4e4e7;
+    background: #f4f4f5;
+    transform: translateY(-2px);
+}
+
+.gs-feature-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: #000000;
+    color: #ffffff;
+}
+
+.gs-feature-card h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #18181b;
+    margin: 0;
+}
+
+.gs-feature-card p {
+    font-size: 0.875rem;
+    color: #71717a;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ── Success State ── */
+.gs-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1.5rem;
+    padding: 3rem 2rem;
+}
+
+.gs-success-icon {
+    width: 72px;
+    height: 72px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #000000;
+    color: #ffffff;
+    animation: gsScaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes gsScaleIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.gs-success h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #000000;
+    letter-spacing: -0.03em;
+    margin: 0;
+}
+
+.gs-success p {
+    font-size: 1.1rem;
+    color: #71717a;
+    max-width: 420px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.gs-success-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+/* ── Footer (matches About Us footer) ── */
+.gs-footer {
+    margin-top: auto;
+    border-top: 1px solid #27272a;
+    padding: 5rem 2.5rem;
+    background: #000000;
+    color: #ffffff;
+}
+
+.gs-footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.gs-footer-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 3rem;
+}
+
+.gs-footer-brand {
+    max-width: 280px;
+}
+
+.gs-footer-brand img {
+    height: 32px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    margin-bottom: 1.5rem;
+}
+
+.gs-footer-brand p {
+    font-size: 0.875rem;
+    color: #a1a1aa;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.gs-footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+}
+
+.gs-footer-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gs-footer-col-title {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #71717a;
+}
+
+.gs-footer-col a {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #d4d4d8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.gs-footer-col a:hover {
+    color: #ffffff;
+}
+
+.gs-footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 2rem;
+    border-top: 1px solid #27272a;
+    font-size: 0.75rem;
+    color: #71717a;
+}
+
+.gs-footer-bottom a {
+    color: #71717a;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.gs-footer-bottom a:hover {
+    color: #ffffff;
+}
+
+.gs-footer-legal {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .gs-hero {
+        padding: 6rem 1.5rem 3rem;
+        min-height: 40vh;
+    }
+
+    .gs-hero h1 {
+        font-size: 2.25rem;
+    }
+
+    .gs-hero p {
+        font-size: 1.05rem;
+    }
+
+    .gs-form-section {
+        padding: 0 1.5rem 4rem;
+    }
+
+    .gs-form-card {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+    }
+
+    .gs-row {
+        grid-template-columns: 1fr;
+    }
+
+    .gs-features {
+        padding: 0 1.5rem 4rem;
+    }
+
+    .gs-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gs-actions {
+        flex-direction: column;
+    }
+
+    .gs-btn-primary,
+    .gs-btn-secondary {
+        width: 100%;
+    }
+
+    .gs-footer-top {
+        flex-direction: column;
+    }
+
+    .gs-footer-links {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+
+    .gs-footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .gs-form-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .gs-footer-links {
+        grid-template-columns: 1fr;
+    }
+}

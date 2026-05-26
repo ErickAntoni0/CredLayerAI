@@ -39,80 +39,80 @@ const Community = () => {
   const tabs = useMemo(
     () => [
       { id: 'feed', name: 'Feed', icon: '🗞️' },
-    { id: 'leaders', name: 'Líderes', icon: '🏆' },
-    { id: 'events', name: 'Eventos', icon: '📅' },
-    { id: 'support', name: 'Soporte', icon: '💬' }
+      { id: 'leaders', name: 'Líderes', icon: '🏆' },
+      { id: 'events', name: 'Eventos', icon: '📅' },
+      { id: 'support', name: 'Soporte', icon: '💬' }
     ],
     []
   )
 
   const communityPosts = useMemo(
     () => [
-    {
+      {
         id: 'feed-1',
-      ensName: 'juan.micro.eth',
-      content: '¡Acabo de completar mi primer préstamo! El sistema de reputación funciona perfectamente.',
-      likes: 12,
-      comments: 3,
+        ensName: 'juan.micro.eth',
+        content: '¡Acabo de completar mi primer préstamo! El sistema de reputación funciona perfectamente.',
+        likes: 12,
+        comments: 3,
         timestamp: 'Hace 2 horas',
-      type: 'achievement'
-    },
-    {
+        type: 'achievement'
+      },
+      {
         id: 'feed-2',
-      ensName: 'maria.micro.eth',
+        ensName: 'maria.micro.eth',
         content: '¿Cómo optimizan las tarifas en Arbitrum cuando la red está congestionada? ¡Compartan tips!',
-      likes: 8,
-      comments: 7,
+        likes: 8,
+        comments: 7,
         timestamp: 'Hace 4 horas',
-      type: 'question'
-    },
-    {
+        type: 'question'
+      },
+      {
         id: 'feed-3',
-      ensName: 'carlos.micro.eth',
+        ensName: 'carlos.micro.eth',
         content: 'CulturaChain MX me ayudó a monetizar mi catálogo musical. Automatizamos royalties en una semana.',
-      likes: 25,
-      comments: 15,
+        likes: 25,
+        comments: 15,
         timestamp: 'Hace 6 horas',
-      type: 'experience'
-    }
+        type: 'experience'
+      }
     ],
     []
   )
 
   const leaders = useMemo(
     () => [
-    { rank: 1, ensName: 'ana.micro.eth', reputation: 950, transactions: 127, category: 'MicroPay' },
-    { rank: 2, ensName: 'luis.micro.eth', reputation: 920, transactions: 98, category: 'CulturaChain' },
-    { rank: 3, ensName: 'sofia.micro.eth', reputation: 890, transactions: 156, category: 'MicroPay' },
-    { rank: 4, ensName: 'miguel.micro.eth', reputation: 870, transactions: 89, category: 'CulturaChain' },
-    { rank: 5, ensName: 'carmen.micro.eth', reputation: 850, transactions: 134, category: 'MicroPay' }
+      { rank: 1, ensName: 'ana.micro.eth', reputation: 950, transactions: 127, category: 'MicroPay' },
+      { rank: 2, ensName: 'luis.micro.eth', reputation: 920, transactions: 98, category: 'CulturaChain' },
+      { rank: 3, ensName: 'sofia.micro.eth', reputation: 890, transactions: 156, category: 'MicroPay' },
+      { rank: 4, ensName: 'miguel.micro.eth', reputation: 870, transactions: 89, category: 'CulturaChain' },
+      { rank: 5, ensName: 'carmen.micro.eth', reputation: 850, transactions: 134, category: 'MicroPay' }
     ],
     []
   )
 
   const events = useMemo(
     () => [
-    {
+      {
         id: 'event-1',
-      title: 'Workshop: Introducción a DeFi',
+        title: 'Workshop: Introducción a DeFi',
         date: '2024-11-25T18:00:00Z',
-      attendees: 45,
+        attendees: 45,
         type: 'Workshop',
         location: 'CDMX'
-    },
-    {
+      },
+      {
         id: 'event-2',
-      title: 'Meetup: Creadores en CulturaChain',
+        title: 'Meetup: Creadores en CulturaChain',
         date: '2024-11-28T19:30:00Z',
-      attendees: 23,
+        attendees: 23,
         type: 'Meetup',
         location: 'Guadalajara'
-    },
-    {
+      },
+      {
         id: 'event-3',
-      title: 'Hackathon: Ethereum México 2025',
+        title: 'Hackathon: Ethereum México 2025',
         date: '2025-02-15T09:00:00Z',
-      attendees: 150,
+        attendees: 150,
         type: 'Hackathon',
         location: 'Monterrey'
       }
@@ -307,18 +307,18 @@ const Community = () => {
                 </span>
               )}
             </div>
-            <h1 className="membership-hero__title">Comunidad MicroPay MX</h1>
+            <h1 className="membership-hero__title">CredLayer AI Community</h1>
             <p className="membership-hero__description">
-              Comparte aprendizajes, conecta con cooperativas y recibe apoyo de otros creadores que usan MicroPay MX y CulturaChain MX.
+              Share your latest updates, connect with other members and get support from the community.
             </p>
             <div className="membership-hero__actions">
               <button className="membership-hero__cta" onClick={() => setActiveTab('feed')}>
                 <ArrowRightCircle size={18} />
-                Publicar actualización
+                Share Update
               </button>
               <button className="membership-hero__cta membership-hero__cta--ghost" onClick={() => setActiveTab('events')}>
                 <ArrowRight size={18} />
-                Ver eventos próximos
+                See Upcoming Events
               </button>
             </div>
           </div>
@@ -328,7 +328,7 @@ const Community = () => {
             style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}
             ref={heroStatsRef}
           >
-            <h3 className="membership-section-title" style={{ marginBottom: 0 }}>Indicadores comunitarios</h3>
+            <h3 className="membership-section-title" style={{ marginBottom: 0 }}>Community Indicators</h3>
             <div className="membership-stat-section">
               {stats.map(stat => (
                 <div key={stat.label} className="membership-stat-card">
@@ -338,9 +338,9 @@ const Community = () => {
               ))}
             </div>
             <p className="membership-section-subtitle" style={{ marginBottom: 0 }}>
-              Datos agregados de actividad en MicroPay MX y CulturaChain sincronizados cada 5 minutos.
-        </p>
-      </div>
+              Aggregated data from MicroPay MX and CulturaChain activities synchronized every 5 minutes.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -352,58 +352,58 @@ const Community = () => {
             ref={tabMenuRef}
           >
             {tabs.map(tab => (
-          <button
-            key={tab.id}
+              <button
+                key={tab.id}
                 type="button"
-            onClick={() => setActiveTab(tab.id)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`bond-chip ${activeTab === tab.id ? 'active' : ''}`}
                 style={activeTab === tab.id ? {
                   background: 'linear-gradient(120deg, rgba(14,245,195,0.9), rgba(179,255,0,0.95))',
                   color: '#071120',
                   fontWeight: 600,
-                  borderColor: 'rgba(179,255,0,0.55)'
+                  borderColor: 'rgba(0, 0, 0, 0.55)'
                 } : {}}
-          >
+              >
                 <span style={{ fontSize: '1.1rem' }}>{tab.icon}</span>
                 {tab.name}
-          </button>
-        ))}
-      </div>
+              </button>
+            ))}
+          </div>
 
-      {activeTab === 'feed' && (
+          {activeTab === 'feed' && (
             <div ref={el => { tabContentRef.current = el }} style={{ display: 'grid', gap: '1.25rem' }}>
               <div className="membership-section-card" style={{ background: 'rgba(15,23,42,0.55)' }}>
                 <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
                   <div className="membership-avatar" style={{ width: 56, height: 56, fontSize: '1.1rem' }}>
                     {userProfile?.ensName?.charAt(0) || address?.charAt(2) || 'U'}
-              </div>
-              <div>
+                  </div>
+                  <div>
                     <h3 className="membership-section-title" style={{ marginBottom: '0.35rem' }}>
                       Comparte con la comunidad
-                </h3>
+                    </h3>
                     <p className="membership-section-subtitle" style={{ marginBottom: 0 }}>
                       Participa en la conversación y gana reputación colaborando con otros usuarios.
-                </p>
-              </div>
-            </div>
-            <textarea
+                    </p>
+                  </div>
+                </div>
+                <textarea
                   value={postContent}
                   onChange={event => setPostContent(event.target.value)}
-              placeholder="Comparte tu experiencia, pregunta o logro..."
+                  placeholder="Comparte tu experiencia, pregunta o logro..."
                   className="membership-input"
                   rows={4}
-            />
+                />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', gap: '1rem', flexWrap: 'wrap' }}>
                   <div className="bond-chip-group" style={{ gap: '0.5rem' }}>
                     <span className="status-chip status-chip--ghost" style={{ cursor: 'pointer' }}>📸 Foto</span>
                     <span className="status-chip status-chip--ghost" style={{ cursor: 'pointer' }}>🎧 Audio</span>
                     <span className="status-chip status-chip--ghost" style={{ cursor: 'pointer' }}>🎉 Logro</span>
-              </div>
+                  </div>
                   <button type="button" className="membership-hero__cta" onClick={handlePublish}>
                     Publicar ahora
-              </button>
-            </div>
-          </div>
+                  </button>
+                </div>
+              </div>
 
               <div className="membership-list" style={{ gap: '1rem' }}>
                 {communityPosts.map((post, index) => (
@@ -413,35 +413,35 @@ const Community = () => {
                     style={{ alignItems: 'flex-start', gap: '1rem' }}
                     ref={el => (feedItemsRef.current[index] = el)}
                   >
-                  <div className="membership-avatar" style={{ width: 48, height: 48, fontSize: '1rem' }}>
-                    {post.ensName.charAt(0).toUpperCase()}
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', flex: 1 }}>
-                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                      <strong style={{ color: 'var(--white-color)' }}>{post.ensName}</strong>
-                      <span className="status-chip status-chip--ghost" style={{ textTransform: 'capitalize' }}>
-                        {post.type === 'achievement' ? 'Logro' : post.type === 'question' ? 'Pregunta' : 'Experiencia'}
-                      </span>
-                      <span style={{ fontSize: '0.8rem', color: 'rgba(226,232,240,0.55)' }}>{post.timestamp}</span>
+                    <div className="membership-avatar" style={{ width: 48, height: 48, fontSize: '1rem' }}>
+                      {post.ensName.charAt(0).toUpperCase()}
                     </div>
-                    <p style={{ color: 'rgba(226,232,240,0.8)' }}>{post.content}</p>
-                    <div style={{ display: 'flex', gap: '1.5rem', color: 'rgba(226,232,240,0.7)', fontSize: '0.85rem' }}>
-                      <button className="link-reset" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <Heart size={16} /> {post.likes}
-                      </button>
-                      <button className="link-reset" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-                        <MessageCircle size={16} /> {post.comments}
-                      </button>
-                      <button className="link-reset">Compartir</button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', flex: 1 }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <strong style={{ color: 'var(--white-color)' }}>{post.ensName}</strong>
+                        <span className="status-chip status-chip--ghost" style={{ textTransform: 'capitalize' }}>
+                          {post.type === 'achievement' ? 'Logro' : post.type === 'question' ? 'Pregunta' : 'Experiencia'}
+                        </span>
+                        <span style={{ fontSize: '0.8rem', color: 'rgba(226,232,240,0.55)' }}>{post.timestamp}</span>
+                      </div>
+                      <p style={{ color: 'rgba(226,232,240,0.8)' }}>{post.content}</p>
+                      <div style={{ display: 'flex', gap: '1.5rem', color: 'rgba(226,232,240,0.7)', fontSize: '0.85rem' }}>
+                        <button className="link-reset" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <Heart size={16} /> {post.likes}
+                        </button>
+                        <button className="link-reset" style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                          <MessageCircle size={16} /> {post.comments}
+                        </button>
+                        <button className="link-reset">Compartir</button>
+                      </div>
                     </div>
                   </div>
-                </div>
-            ))}
-          </div>
-        </div>
-      )}
+                ))}
+              </div>
+            </div>
+          )}
 
-      {activeTab === 'leaders' && (
+          {activeTab === 'leaders' && (
             <div
               className="membership-section-card"
               style={{ background: 'rgba(15,23,42,0.55)' }}
@@ -449,9 +449,9 @@ const Community = () => {
                 tabContentRef.current = el
               }}
             >
-              <h2 className="membership-section-title">Tabla de líderes</h2>
+              <h2 className="membership-section-title">Leaderboard</h2>
               <p className="membership-section-subtitle">
-                Usuarios con mayor reputación combinada entre MicroPay MX y CulturaChain MX.
+                Top members with the highest reputation score.
               </p>
               <div className="membership-list" style={{ gap: '0.85rem' }}>
                 {leaders.map((leader, index) => (
@@ -473,9 +473,9 @@ const Community = () => {
                         color: '#0f172a',
                         fontWeight: 700
                       }}>
-                      {leader.rank}
-                    </div>
-                    <div>
+                        {leader.rank}
+                      </div>
+                      <div>
                         <div style={{ color: 'var(--white-color)', fontWeight: 600 }}>{leader.ensName}</div>
                         <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.65)' }}>
                           {leader.transactions} transacciones • {leader.category}
@@ -500,9 +500,9 @@ const Community = () => {
                 tabContentRef.current = el
               }}
             >
-              <h2 className="membership-section-title">Eventos comunitarios</h2>
+              <h2 className="membership-section-title">Community Events</h2>
               <p className="membership-section-subtitle">
-                Participa en talleres, meetups y actividades presenciales de la red MicroPay MX.
+                Join workshops, meetups, and online events to connect with the MicroPay MX community.
               </p>
               <div className="membership-list" style={{ gap: '1rem' }}>
                 {events.map((event, index) => (
@@ -519,7 +519,7 @@ const Community = () => {
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
                         <div>
                           <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>{event.title}</div>
-                          <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.7)' }}>{event.attendees} asistentes confirmados</div>
+                          <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.7)' }}>{event.attendees} confirmed attendees</div>
                         </div>
                         <span className="status-chip status-chip--ghost" style={{ textTransform: 'capitalize' }}>{event.type}</span>
                       </div>
@@ -535,15 +535,15 @@ const Community = () => {
                       </div>
                       <div style={{ marginTop: '0.85rem' }}>
                         <button className="membership-hero__cta" style={{ justifyContent: 'center' }}>
-                          Confirmar asistencia
+                          Confirm Attendance
                         </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            </div>
+          )}
 
           {activeTab === 'support' && (
             <div
@@ -553,18 +553,18 @@ const Community = () => {
                 tabContentRef.current = el
               }}
             >
-              <h2 className="membership-section-title">Centro de soporte</h2>
+              <h2 className="membership-section-title">Support Center</h2>
               <div className="membership-list" style={{ gap: '1rem' }}>
                 <div
                   className="membership-list-item"
                   style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.65rem' }}
                   ref={el => (supportCardsRef.current[0] = el)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Documentación rápida</div>
+                  <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Quick Start Guide</div>
                   <div className="bond-chip-group" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span className="status-chip status-chip--ghost">Guía de inicio</span>
-                    <span className="status-chip status-chip--ghost">Sistema de reputación</span>
-                    <span className="status-chip status-chip--ghost">CulturaChain para creadores</span>
+                    <span className="status-chip status-chip--ghost">Getting Started</span>
+                    <span className="status-chip status-chip--ghost">Reputation System</span>
+                    <span className="status-chip status-chip--ghost">CulturaChain for Creators</span>
                   </div>
                 </div>
                 <div
@@ -572,15 +572,15 @@ const Community = () => {
                   style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.65rem' }}
                   ref={el => (supportCardsRef.current[1] = el)}
                 >
-                  <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Contactos directos</div>
+                  <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Direct Contacts</div>
                   <div className="bond-chip-group" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span className="status-chip" style={{ cursor: 'pointer' }}>💬 Chat en vivo</span>
-                    <span className="status-chip" style={{ cursor: 'pointer' }}>📧 support@micropay.mx</span>
-                    <span className="status-chip" style={{ cursor: 'pointer' }}>🐛 Reportar bug</span>
+                    <span className="status-chip" style={{ cursor: 'pointer' }}>💬 Live Chat</span>
+                    <span className="status-chip" style={{ cursor: 'pointer' }}>📧 support@credlayerai.mx</span>
+                    <span className="status-chip" style={{ cursor: 'pointer' }}>🐛 Report Bug</span>
                   </div>
                 </div>
               </div>
-          </div>
+            </div>
           )}
         </div>
       </section>
@@ -591,35 +591,35 @@ const Community = () => {
           style={{ display: 'grid', gap: '1.25rem' }}
           ref={insightSectionRef}
         >
-          <h3 className="membership-section-title">Cómo medimos la participación</h3>
+          <h3 className="membership-section-title">How We Measure Engagement</h3>
           <div className="membership-list" style={{ gap: '0.75rem' }}>
             <div className="membership-list-item" style={{ justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Crecimiento sostenible</div>
-                <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.7)' }}>
-                  Usamos métricas on-chain y en la app para calibrar incentivos a cooperativas creativas.
+                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Sustainable Growth</div>
+                <div style={{ fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.7)' }}>
+                  We use on-chain and in-app metrics to calibrate incentives for creative cooperatives.
                 </div>
               </div>
-              <TrendingUp size={20} style={{ color: 'rgba(94,234,212,0.95)' }} />
+              <TrendingUp size={20} style={{ color: '#ffffff)' }} />
             </div>
             <div className="membership-list-item" style={{ justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Soporte colaborativo</div>
+                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Collaborative Support</div>
                 <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.7)' }}>
-                  La reputación aumenta cuando ayudas a otros usuarios a resolver dudas o completar proyectos.
+                  Reputation increases when you help other users resolve doubts or complete projects.
                 </div>
               </div>
               <Heart size={20} style={{ color: 'rgba(248,113,113,0.95)' }} />
             </div>
             <div className="membership-list-item" style={{ justifyContent: 'space-between' }}>
               <div>
-                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Sinergia MicroPay + CulturaChain</div>
+                <div style={{ fontWeight: 600, color: 'var(--white-color)' }}>Synergy MicroPay + CulturaChain</div>
                 <div style={{ fontSize: '0.85rem', color: 'rgba(226,232,240,0.7)' }}>
-                  Tu impacto se refleja en ambas plataformas, potenciando préstamos, regalías y voto comunitario.
-          </div>
-        </div>
-              <Award size={20} style={{ color: 'rgba(192,132,252,0.95)' }} />
-        </div>
+                  Your impact is reflected on both platforms, enhancing loans, royalties, and community voting.
+                </div>
+              </div>
+              <Award size={20} style={{ color: 'rgba(255, 255, 255, 0.95)' }} />
+            </div>
           </div>
         </div>
       </section>

@@ -1,0 +1,39 @@
+/* src/styles/neon-gauge.css */
+.neon-gauge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #00ffea 0%,
+    #00ffea 25%,
+    #ff00d5 25%,
+    #ff00d5 50%,
+    #00ffea 50%,
+    #00ffea 75%,
+    #ff00d5 75%,
+    #ff00d5 100%
+  );
+  animation: rotate 6s linear infinite;
+  box-shadow: inset 0 0 12px rgba(0,255,234,0.3), 0 0 20px rgba(255,0,213,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.neon-gauge .inner {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #111827;
+  color: #00ffea;
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

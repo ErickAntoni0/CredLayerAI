@@ -1,0 +1,37 @@
+/* src/styles/hover-glow.css */
+/* Glassmorphism hover-glow effect for premium cards */
+
+.hover-glow {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, rgba(255,255,255,0.2), rgba(0,255,255,0.15), rgba(255,0,255,0.15), rgba(255,255,0,0.2));
+  background-size: 400% 400%;
+  filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+  animation: glowMove 6s linear infinite;
+}
+
+.hover-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+.hover-glow:hover::before {
+  opacity: 0.9;
+}
+
+@keyframes glowMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

@@ -1,0 +1,34 @@
+/* Custom overrides for dark theme landing page */
+body.bg-white {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+/* Ensure all text inherits white color */
+body.bg-white * {
+  color: inherit !important;
+}
+/* Override button styles for dark theme */
+.btn-marketing.btn-primary.btn-dark {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+.btn-marketing.btn-secondary.btn-dark {
+  background-color: transparent !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+/* Fix huge border radius */
+.btn-marketing {
+  border-radius: 0.5rem !important;
+}
+/* Ensure container background is dark */
+.marketing-container {
+  background-color: transparent !important;
+}
+/* Grid item styles */
+.grid-item {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  padding: 1rem;
+}

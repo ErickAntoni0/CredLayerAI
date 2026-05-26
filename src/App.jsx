@@ -7,10 +7,13 @@ import SimpleMetaMask from './components/SimpleMetaMask'
 import Layout from './components/Layout'
 import Dashboard from './pages/Dashboard'
 import Payments from './pages/Payments'
+import Loans from './pages/Loans'
 import Profile from './pages/Profile'
-import Community from './pages/archive/Community'
+import Community from './pages/Community'
 import UnifiedDashboard from './pages/UnifiedDashboard'
 import ProfessionalDashboard from './pages/archive/ProfessionalDashboard'
+import AboutUs from './pages/Abbout'
+import GetStarted from './pages/GetStarted'
 
 function RedirectToStaticLanding() {
   React.useEffect(() => {
@@ -29,6 +32,17 @@ function App() {
       <Routes>
         <Route path="/landing" element={<Landing />} />
         <Route path="/connect" element={<SimpleMetaMask />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/get-started" element={<GetStarted />} />
+        <Route path="/community" element={<Community />} />
+        <Route path="/launch" element={<Navigate to="/connect" replace />} />
+        {/* Redirecciones de páginas de la app a la pantalla de conexión */}
+        <Route path="/dashboard" element={<Navigate to="/connect" replace />} />
+        <Route path="/payments" element={<Navigate to="/connect" replace />} />
+        <Route path="/loans" element={<Navigate to="/connect" replace />} />
+        <Route path="/profile" element={<Navigate to="/connect" replace />} />
+        <Route path="/unified" element={<Navigate to="/connect" replace />} />
+        <Route path="/professional" element={<Navigate to="/connect" replace />} />
         <Route path="*" element={<RedirectToStaticLanding />} />
       </Routes>
     )
@@ -38,15 +52,19 @@ function App() {
   return (
     <Routes>
       <Route path="/landing" element={<Landing />} />
+      <Route path="/about" element={<AboutUs />} />
+      <Route path="/get-started" element={<GetStarted />} />
+      <Route path="/community" element={<Community />} />
       <Route element={<Layout />}>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/payments" element={<Payments />} />
+        <Route path="/loans" element={<Loans />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/community" element={<Community />} />
         <Route path="/unified" element={<UnifiedDashboard />} />
         <Route path="/professional" element={<ProfessionalDashboard />} />
       </Route>
+      <Route path="/launch" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<RedirectToStaticLanding />} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )

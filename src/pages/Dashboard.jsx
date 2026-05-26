@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Buffer } from 'buffer'
 window.Buffer = window.Buffer || Buffer
-import { Activity, Banknote, Shield, Users, DollarSign, Star, FileText, Download, CheckCircle, Clock, ExternalLink, Sparkles, Wallet, ArrowRight } from 'lucide-react'
+import { Activity, Banknote, Shield, Users, DollarSign, Star, FileText, Download, CheckCircle, Clock, ExternalLink, Sparkles, Wallet, ArrowRight, TrendingUp, TrendingDown, Send, Zap, ArrowUpRight, AlertCircle } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useWalletConnection } from '../hooks/useWalletConnection'
 import { usePaymentsData } from '../hooks/usePaymentsData'
 import { useAiAssistantContext } from '../context/AiAssistantContext'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts'
 import { jsPDF } from 'jspdf'
 import { toast } from 'react-hot-toast'
 // ─── Hook de contrato real ────────────────────────────────────────────────────
@@ -35,6 +35,23 @@ const transactionData = [
 const platformDistribution = [
   { name: 'Income', value: 65, color: '#000000' },
   { name: 'Expenses', value: 35, color: '#9CA3AF' },
+]
+
+const areaData = [
+  { month: 'Jan', volume: 850, reputation: 320 },
+  { month: 'Feb', volume: 1100, reputation: 480 },
+  { month: 'Mar', volume: 1450, reputation: 620 },
+  { month: 'Apr', volume: 1890, reputation: 750 },
+  { month: 'May', volume: 2450, reputation: 880 },
+  { month: 'Jun', volume: 3200, reputation: 960 },
+]
+
+const reputationLeaderboard = [
+  { rank: 1, name: 'vitalik.eth', score: 982, change: +3, color: 'bg-amber-400' },
+  { rank: 2, name: 'alice.eth', score: 956, change: +7, color: 'bg-zinc-400' },
+  { rank: 3, name: 'bob.eth', score: 921, change: -2, color: 'bg-orange-400' },
+  { rank: 4, name: 'carol.eth', score: 889, change: +12, color: 'bg-emerald-500' },
+  { rank: 5, name: 'dave.eth', score: 847, change: +1, color: 'bg-blue-500' },
 ]
 
 const tabs = [
@@ -385,6 +402,125 @@ const Dashboard = () => {
               </div>
             </div>
           </section>
+
+          {/* ── Vuexy Elements: Quick Actions + Area Chart + Leaderboard ── */}
+          <section className="py-12 px-6 w-full">
+            <div className="max-w-6xl mx-auto space-y-8">
+
+              {/* Trend Stat Row */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  { label: 'Trust Score', value: displayScore, change: '+12.5%', positive: true, icon: Shield, bg: 'bg-violet-500' },
+                  { label: 'Total Volume', value: metrics.totalVolumeUsdFormatted, change: '+8.2%', positive: true, icon: DollarSign, bg: 'bg-emerald-500' },
+                  { label: 'On-Chain Txs', value: totalOnChainTxs || metrics.completedThisMonth, change: '+24.1%', positive: true, icon: Activity, bg: 'bg-blue-500' },
+                  { label: 'Success Rate', value: metrics.successRateFormatted, change: '-0.3%', positive: false, icon: Star, bg: 'bg-amber-500' },
+                ].map(({ label, value, change, positive, icon: Icon, bg }) => (
+                  <div key={label} className="stagger-item bg-white border border-gray-200 rounded-2xl p-5 hover:border-black transition-colors">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-1">{label}</p>
+                        <p className="text-2xl font-black text-black tracking-tight">{value}</p>
+                      </div>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${bg}`}>
+                        <Icon className="w-5 h-5 text-white" size={18} />
+                      </div>
+                    </div>
+                    <div className={`flex items-center gap-1 text-xs font-semibold ${positive ? 'text-emerald-500' : 'text-red-400'}`}>
+                      {positive ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
+                      <span>{change}</span>
+                      <span className="font-normal text-gray-400 ml-1">vs last month</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Area Chart + Quick Actions */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 hover:border-black transition-colors">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <h3 className="text-base font-bold text-black">Volume & Reputation Growth</h3>
+                      <p className="text-xs text-gray-400 mt-0.5">6-month trend</p>
+                    </div>
+                    <span className="flex items-center gap-1 text-emerald-500 text-sm font-semibold">
+                      <TrendingUp size={14} /> +18.4%
+                    </span>
+                  </div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <AreaChart data={areaData}>
+                      <defs>
+                        <linearGradient id="volGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.12} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="repGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.12} />
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" vertical={false} />
+                      <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 11 }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF', fontSize: 11 }} />
+                      <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #E5E7EB', fontSize: 12 }} />
+                      <Area type="monotone" dataKey="volume" stroke="#10b981" strokeWidth={2} fill="url(#volGrad)" name="Volume ($)" />
+                      <Area type="monotone" dataKey="reputation" stroke="#8b5cf6" strokeWidth={2} fill="url(#repGrad)" name="Reputation pts" />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:border-black transition-colors flex flex-col gap-3">
+                  <h3 className="text-base font-bold text-black mb-1">Quick Actions</h3>
+                  {[
+                    { label: 'Send Payment', icon: Send, color: 'bg-emerald-500 hover:bg-emerald-600', href: '/payments' },
+                    { label: 'Request Loan', icon: DollarSign, color: 'bg-violet-500 hover:bg-violet-600', href: '/loans' },
+                    { label: 'View Profile', icon: Users, color: 'bg-blue-500 hover:bg-blue-600', href: '/profile' },
+                    { label: 'Export Report', icon: FileText, color: 'bg-gray-800 hover:bg-black', href: '#', onClick: () => setActiveTab('reports') },
+                  ].map(({ label, icon: Icon, color, href, onClick }) => (
+                    <a
+                      key={label}
+                      href={href}
+                      onClick={onClick}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-white text-sm font-semibold transition-colors ${color}`}
+                    >
+                      <Icon size={16} />
+                      {label}
+                      <ArrowUpRight size={14} className="ml-auto opacity-70" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Reputation Leaderboard */}
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:border-black transition-colors">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-base font-bold text-black">Reputation Leaderboard</h3>
+                  <button onClick={() => setActiveTab('reputation')} className="text-xs font-semibold text-gray-400 hover:text-black transition-colors flex items-center gap-1">
+                    View details <ArrowUpRight size={12} />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                  {reputationLeaderboard.map(({ rank, name, score, change, color }) => (
+                    <div key={rank} className="flex sm:flex-col items-center sm:items-start gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                      <span className={`w-7 h-7 ${color} rounded-full flex items-center justify-center text-xs font-black text-white flex-shrink-0`}>{rank}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-black truncate">{name}</p>
+                        <div className="h-1 bg-gray-100 rounded-full mt-1">
+                          <div className="h-full bg-violet-400 rounded-full" style={{ width: `${(score / 1000) * 100}%` }} />
+                        </div>
+                      </div>
+                      <div className="text-right sm:text-left">
+                        <p className="text-sm font-black text-black">{score}</p>
+                        <p className={`text-xs font-semibold ${change > 0 ? 'text-emerald-500' : 'text-red-400'}`}>{change > 0 ? '+' : ''}{change}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+          </section>
+
         </div>
       )}
 

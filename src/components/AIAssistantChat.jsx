@@ -79,7 +79,7 @@ function AIAssistantChat() {
         aria-expanded={isOpen}
       >
         {isOpen ? <X size={18} /> : <MessageCircle size={20} />}
-        <span>IA Assistant</span>
+        <span>AI Assistant</span>
       </button>
 
       {isOpen && (

@@ -88,9 +88,10 @@ export const useAiAssistant = (defaultIntent = 'general') => {
 
     try {
       const apiKey = import.meta.env?.VITE_ANTHROPIC_API_KEY
+      const isPlaceholder = apiKey && (apiKey.includes('P3X6XJ3X3X') || apiKey.startsWith('YOUR_ANTHROPIC_KEY'));
 
-      // ── MODO MOCK: si no hay API key, responde con datos reales pero sin llamada ──
-      if (!apiKey) {
+      // ── MODO MOCK: si no hay API key o es un placeholder, responde con datos reales pero sin llamada ──
+      if (!apiKey || isPlaceholder) {
         const mockReply = buildMockReply(trimmedMessage, userState)
         setLastResponse(mockReply)
         setMessages(prev => [...prev, { role: 'ai', content: mockReply }])

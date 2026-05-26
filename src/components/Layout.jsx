@@ -39,8 +39,9 @@ const Layout = () => {
     () => [
       { path: '/landing/index.html', label: 'Home', icon: Home },
       { path: '/payments', label: 'Payments', icon: CreditCard },
-      { path: '/profile', label: 'Profile', icon: User },
-      { path: '/IA/index.html', label: 'NOVA | IA', icon: Brain }
+      { path: '/loans', label: 'Loans', icon: Landmark },
+      { path: '/IA/index.html', label: 'NOVA | IA', icon: Brain },
+      { path: '/profile', label: 'Profile', icon: User }
     ],
     []
   )
@@ -105,7 +106,7 @@ const Layout = () => {
                         <div className={`w-2 h-2 rounded-full ${chain?.unsupported ? 'bg-red-500' : 'bg-green-500'}`}></div>
                         <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{chain?.name || 'Network'}</span>
                       </div>
-                      
+
                       <div className="h-4 w-px bg-gray-200"></div>
 
                       <div className="flex items-center gap-3 bg-black text-white px-4 py-1.5 rounded-full shadow-sm">
@@ -120,7 +121,7 @@ const Layout = () => {
                     </div>
 
                     {/* Subtle Disconnect */}
-                    <button 
+                    <button
                       onClick={handleDisconnect}
                       className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all"
                       title="Disconnect Wallet"

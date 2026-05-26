@@ -1,0 +1,43 @@
+/* ─────────────────────────────────────────────
+   about.css  —  Estilos para About Us (Diseño Cinematográfico Blanco y Negro)
+───────────────────────────────────────────── */
+
+.marketing-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+.btn-pill {
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-pill:hover {
+    transform: translateY(-1px);
+}
+
+.nav-link {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #111;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: opacity 0.2s;
+}
+
+.nav-link:hover {
+    opacity: 0.6;
+}
+
+/* Ajustes responsive */
+@media (max-width: 960px) {
+    .marketing-container {
+        padding: 0 1.5rem;
+    }
+}

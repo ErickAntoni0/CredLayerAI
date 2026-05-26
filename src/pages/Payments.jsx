@@ -66,14 +66,7 @@ const Payments = () => {
   // ─── Obtener signer y contratos ───────────────────────────────────────────
   const getContracts = useCallback(async () => {
     if (!window?.ethereum) throw new Error('Wallet not detected')
-    let provider
-    if (ethers && 'BrowserProvider' in ethers) {
-      provider = new ethers.BrowserProvider(window.ethereum)
-    } else if (ethers?.providers?.Web3Provider) {
-      provider = new ethers.providers.Web3Provider(window.ethereum)
-    } else {
-      throw new Error('Unsupported ethers version')
-    }
+    const provider = new ethers.BrowserProvider(window.ethereum)
     const signer = await provider.getSigner()
     const credlayer = new ethers.Contract(CREDLAYER_ADDRESS, CREDLAYER_ABI, signer)
     const usdc = new ethers.Contract(USDC_SEPOLIA, ERC20_ABI, signer)

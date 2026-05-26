@@ -6,7 +6,9 @@ import { useWalletConnection } from '../hooks/useWalletConnection'
 import { usePaymentsData } from '../hooks/usePaymentsData'
 import { useLoansData } from '../hooks/useLoansData'
 
-import '../styles/landing.css'
+import '../styles/landing-hero.css';
+import '../styles/neon-gauge.css';
+import NeonGauge from '../components/NeonGauge';
 
 const microcopy = {
   heroTitle: 'Infraestructura DeFi pensada para comunidades mexicanas',
@@ -111,7 +113,7 @@ const Landing = () => {
         </Link>
       </nav>
 
-      <header className="landing__hero">
+      <header className="landing__hero" style={{ backgroundImage: "url('/landing_hero.png')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
         <div className="landing__hero-content">
           <div className="landing__chip-group">
             <span className="landing__chip landing__chip--pulse">Arbitrum · Scroll · ENS</span>
@@ -136,13 +138,15 @@ const Landing = () => {
             <div className="landing__identity-item">
               <ShieldCheck size={16} />
               <span>{userProfile?.isRegistered ? 'Perfil verificado' : 'Registro pendiente'}</span>
-              <span className="landing__badge">{reputationScore ?? 0} pts</span>
+            </div>
+            <div style={{ marginTop: '1rem' }}>
+              <NeonGauge score={reputationScore ?? 0} size={80} label="Trust Score" />
             </div>
           </div>
         </div>
-        <div className="landing__hero-card">
+        <div className="landing__hero-card hover-glow-card" style={{ background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)' }}>
           <div className="landing__hero-card-header">
-            <span className="landing__hero-label">Estado operativo</span>
+            <span className="landing__hero-label">Operative System</span>
             <span className="landing__hero-status">LIVE</span>
           </div>
           <div className="landing__hero-metric">
@@ -161,14 +165,14 @@ const Landing = () => {
           </div>
           <div className="landing__hero-foot">
             <span className="landing__chip landing__chip--ghost">Stylus ready</span>
-            <span className="landing__chip landing__chip--ghost">ENS integrado</span>
+            <span className="landing__chip landing__chip--ghost">ENS integrated</span>
           </div>
         </div>
       </header>
 
       <section className="landing__stats">
         {stats.map((stat) => (
-          <article key={stat.label} className="landing__stat-card">
+          <article key={stat.label} className="landing__stat-card hover-glow-card">
             <span className="landing__stat-label">{stat.label}</span>
             <strong className="landing__stat-value">{stat.value}</strong>
             <span className="landing__stat-hint">{stat.hint}</span>
@@ -180,7 +184,7 @@ const Landing = () => {
         {featureBlocks.map((block) => {
           const Icon = block.icon
           return (
-            <article key={block.id} className="landing__feature-card">
+            <article key={block.id} className="landing__feature-card hover-glow-card">
               <span className="landing__feature-eyebrow">{block.eyebrow}</span>
               <div className="landing__feature-icon">
                 <Icon size={20} />
@@ -197,7 +201,7 @@ const Landing = () => {
       </section>
 
       <section className="landing__proof">
-        <h2>Listo para el hackathon ETH México 2025</h2>
+        <h2>Ready for ETH México 2025 hackathon</h2>
         <div className="landing__proof-grid">
           {proofPoints.map((point) => (
             <article key={point.title} className="landing__proof-card">
