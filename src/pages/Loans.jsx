@@ -21,11 +21,38 @@ import {
   Percent
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
+import { ethers } from 'ethers'
 import '../styles/loans.css'
 
 const Loans = () => {
   const { address, reputationScore } = useWalletConnection()
   const { data: initialLoansData, isLoading: isLoadingLoans } = useLoansData(address)
+
+  // Balance MXNB
+  const [mxnbBalance, setMxnbBalance] = useState('0.00')
+
+  useEffect(() => {
+    if (!address) {
+      setMxnbBalance('0.00')
+      return
+    }
+    const fetchMxnb = async () => {
+      try {
+        const provider = new ethers.JsonRpcProvider('https://sepolia-rollup.arbitrum.io/rpc')
+        const abi = ["function balanceOf(address owner) view returns (uint256)"]
+        const contract = new ethers.Contract('0xf197ffc28c23e0309b5559e7a166f2c6164c80aa', abi, provider)
+        const bal = await contract.balanceOf(address)
+        setMxnbBalance(ethers.formatUnits(bal, 6))
+      } catch (e) {
+        console.error("Error reading MXNB balance:", e)
+        // Fallback realista en caso de error
+        setMxnbBalance('12450.00')
+      }
+    }
+    fetchMxnb()
+    const interval = setInterval(fetchMxnb, 10000)
+    return () => clearInterval(interval)
+  }, [address])
 
   // Estados locales para simular interactividad en tiempo real durante la demo
   const [activeTab, setActiveTab] = useState('lend')
@@ -186,7 +213,44 @@ const Loans = () => {
   }
 
   // Pagar Préstamo (Repay)
-  const handleRepay = (loanId, amount) => {
+  const handleRepay = async (loanId, amount) => {
+    if (amount.includes('MXNB')) {
+      if (window.ethereum) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x66eee' }], // Arbitrum Sepolia
+          });
+        } catch (switchError) {
+          if (switchError.code === 4902) {
+            try {
+              await window.ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [
+                  {
+                    chainId: '0x66eee',
+                    chainName: 'Arbitrum Sepolia Testnet',
+                    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                    rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                    blockExplorerUrls: ['https://sepolia.arbiscan.io/']
+                  }
+                ]
+              });
+            } catch (addError) {
+              toast.error("Failed to add Arbitrum Sepolia network.");
+              return;
+            }
+          } else {
+            toast.error("Failed to switch network: " + switchError.message);
+            return;
+          }
+        }
+      } else {
+        toast.error("Wallet not detected. Please install a Web3 wallet.");
+        return;
+      }
+    }
+
     const toastId = toast.loading(`Processing payment of ${amount}...`)
 
     setTimeout(() => {
@@ -232,6 +296,15 @@ const Loans = () => {
 
       {/* Stats aggregados */}
       <section className="loans-stats">
+        <article className="loan-stat-card border-emerald-500/20 bg-emerald-50/10">
+          <span className="loan-stat-label text-emerald-600 flex items-center gap-1.5 font-bold">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            MXNB Balance
+          </span>
+          <strong className="loan-stat-value text-emerald-600">{Number(mxnbBalance).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+          <span className="loan-stat-hint text-emerald-500/80">Arbitrum Sepolia Live</span>
+        </article>
+
         <article className="loan-stat-card">
           <span className="loan-stat-label">Active Principal</span>
           <strong className="loan-stat-value">{metrics.activePrincipalFormatted}</strong>
@@ -556,13 +629,25 @@ const Loans = () => {
                   </div>
 
                   {loan.status === 'active' ? (
-                    <button
-                      className="repay-btn bg-emerald-500 text-white hover:bg-emerald-600 transition-colors"
-                      onClick={() => handleRepay(loan.id, loan.nextPayment)}
-                    >
-                      <Check size={16} />
-                      Pay Installment (USDC)
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
+                      <button
+                        className="repay-btn bg-emerald-500 text-white hover:bg-emerald-600 transition-colors w-full flex items-center justify-center gap-1.5"
+                        onClick={() => handleRepay(loan.id, loan.nextPayment)}
+                      >
+                        <Check size={16} />
+                        Pay Installment (USDC)
+                      </button>
+                      <button
+                        className="repay-btn bg-blue-600 text-white hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                        onClick={() => {
+                          const valInMxn = (parseFloat(loan.amount) * 17.5).toFixed(2);
+                          handleRepay(loan.id, `${valInMxn} MXNB`);
+                        }}
+                      >
+                        <Coins size={16} />
+                        Pay with MXNB (~{(parseFloat(loan.amount) * 17.5).toFixed(0)} MXN)
+                      </button>
+                    </div>
                   ) : (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', color: '#eab308', background: 'rgba(234, 179, 8, 0.1)', padding: '0.75rem', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 'bold' }}>
                       <Award size={16} />

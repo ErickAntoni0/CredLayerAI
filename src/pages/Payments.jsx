@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Buffer } from 'buffer'
 window.Buffer = window.Buffer || Buffer
 import { useNetwork } from 'wagmi'
@@ -43,6 +44,7 @@ const feeInsights = [
 ]
 
 const Payments = () => {
+  const navigate = useNavigate()
   const { userProfile, address, reputationScore, updateScore } = useWalletConnection()
   const { chain } = useNetwork()
   const { data: paymentsData, isLoading: isPaymentsLoading } = usePaymentsData(address)
@@ -116,6 +118,18 @@ const Payments = () => {
 
       // Éxito
       setLastTxHash(tx.hash)
+      const newTx = {
+        id: Date.now(),
+        type: 'Income',
+        amount: `+${paymentForm.amount} USDC`,
+        from: `${paymentForm.to.slice(0, 6)}...${paymentForm.to.slice(-4)}`,
+        date: new Date().toLocaleString('en-US', { dateStyle: 'short' }),
+        status: 'Verified',
+        hash: tx.hash
+      }
+
+      const existing = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+      localStorage.setItem('creedlayer_txs', JSON.stringify([newTx, ...existing].slice(0, 10)))
       updateScore(12)
 
       toast.success(
@@ -335,6 +349,17 @@ const Payments = () => {
                 </a>
               </div>
             )}
+
+            {/* Sección dashboard */}
+            <div className="mt-6">
+              <button
+                type="button"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-black rounded-xl font-bold transition-all"
+                onClick={() => navigate('/dashboard')}
+              >
+                View Dashboard
+              </button>
+            </div>
 
             {/* Sección Advanced */}
             <div className="mt-12 pt-8 border-t border-gray-100">
