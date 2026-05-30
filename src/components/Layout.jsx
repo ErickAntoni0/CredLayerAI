@@ -40,7 +40,7 @@ const Layout = () => {
       { path: '/landing/index.html', label: 'Home', icon: Home },
       { path: '/payments', label: 'Payments', icon: CreditCard },
       { path: '/loans', label: 'Loans', icon: Landmark },
-      { path: '/IA/index.html', label: 'NOVA | IA', icon: Brain },
+      { path: '/nova', label: 'NOVA | IA', icon: Brain },
       { path: '/profile', label: 'Profile', icon: User }
     ],
     []

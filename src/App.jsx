@@ -14,6 +14,7 @@ import UnifiedDashboard from './pages/UnifiedDashboard'
 import ProfessionalDashboard from './pages/archive/ProfessionalDashboard'
 import AboutUs from './pages/Abbout'
 import GetStarted from './pages/GetStarted'
+import Nova from './pages/Nova'
 
 function RedirectToStaticLanding() {
   React.useEffect(() => {
@@ -43,6 +44,7 @@ function App() {
         <Route path="/profile" element={<Navigate to="/connect" replace />} />
         <Route path="/unified" element={<Navigate to="/connect" replace />} />
         <Route path="/professional" element={<Navigate to="/connect" replace />} />
+        <Route path="/nova" element={<Navigate to="/connect" replace />} />
         <Route path="*" element={<RedirectToStaticLanding />} />
       </Routes>
     )
@@ -60,6 +62,7 @@ function App() {
         <Route path="/payments" element={<Payments />} />
         <Route path="/loans" element={<Loans />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/nova" element={<Nova />} />
         <Route path="/unified" element={<UnifiedDashboard />} />
         <Route path="/professional" element={<ProfessionalDashboard />} />
       </Route>

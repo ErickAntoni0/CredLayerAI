@@ -41,6 +41,14 @@ const STATUS_LABELS = {
   ai: 'NOVA AI'
 }
 
+const renderFormattedText = (rawText) => {
+  if (typeof rawText !== 'string') return ''
+  const formatted = rawText
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+  return <span dangerouslySetInnerHTML={{ __html: formatted }} />
+}
+
 function AIAssistantChat() {
   const { pageIntent, pageContext } = useAiAssistantContext()
   const { ask, messages, isLoading, error, reset } = useAiAssistant(pageIntent)
@@ -122,10 +130,10 @@ function AIAssistantChat() {
                 <div className="ai-chat-meta">{STATUS_LABELS[item.role] || item.role}</div>
                 <div className="ai-chat-bubble">
                   {typeof item.content === 'string' ? (
-                    <p>{item.content}</p>
+                    <p>{renderFormattedText(item.content)}</p>
                   ) : (
                     <>
-                      <p>{item.content?.message}</p>
+                      <p>{renderFormattedText(item.content?.message)}</p>
                       {item.content?.highlights && (
                         <ul>
                           {item.content.highlights.map((highlight, highlightIdx) => (

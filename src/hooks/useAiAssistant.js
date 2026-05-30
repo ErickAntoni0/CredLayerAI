@@ -1,6 +1,7 @@
 // useAiAssistant.js
-// NOVA AI — llama directo a la API de Anthropic con contexto real del contrato Sepolia
-// Requiere: VITE_ANTHROPIC_API_KEY en tu .env
+// NOVA AI — llama directo a la API de Google Gemini con contexto real del contrato Sepolia
+// Requiere: API_GEMINI en tu .env (como VITE_GEMINI_API_KEY)
+// Por ahora usa la clave directa del .env hasta que se migre a VITE_
 
 import { useState, useCallback } from 'react'
 import { ethers } from 'ethers'
@@ -11,7 +12,7 @@ const CREDLAYER_ABI = [
   'function getTrustScore(address user) external view returns (uint256)',
   'function getUserPayments(address user) external view returns (uint256[] memory)',
 ]
-const SEPOLIA_RPC = 'https://rpc.sepolia.org'
+const SEPOLIA_RPC = 'https://ethereum-sepolia-rpc.publicnode.com'
 
 // Lee datos reales del contrato (read-only, sin wallet)
 // Lee datos reales del contrato (read-only, sin wallet)
@@ -115,6 +116,7 @@ export const useAiAssistant = (defaultIntent = 'general') => {
     userState = {},
     message,
   } = {}) => {
+    console.log("API KEY", import.meta.env.VITE_ANTHROPIC_API_KEY)
     setIsLoading(true)
     setError(null)
 
@@ -124,49 +126,45 @@ export const useAiAssistant = (defaultIntent = 'general') => {
     }
 
     try {
-      const apiKey = import.meta.env?.VITE_ANTHROPIC_API_KEY
-      const isPlaceholder = apiKey && (apiKey.includes('P3X6XJ3X3X') || apiKey.startsWith('YOUR_ANTHROPIC_KEY'));
+      // Siempre usa Gemini — no hay modo mock
 
-      // ── MODO MOCK: si no hay API key o es un placeholder, responde con datos reales pero sin llamada ──
-      if (!apiKey || isPlaceholder) {
-        const mockReply = buildMockReply(trimmedMessage, userState)
-        setLastResponse(mockReply)
-        setMessages(prev => [...prev, { role: 'ai', content: mockReply }])
-        setIsLoading(false)
-        return mockReply
-      }
-
-      // ── MODO REAL: llamada directa a Anthropic ────────────────────────────────
+      // ── MODO REAL: llamada directa a Google Gemini ──────────────────────────
       // 1. Leer datos reales del contrato
       const contractData = await fetchContractData(userState?.address)
 
-      // 2. Construir historial de mensajes para la API
-      const history = messages
-        .slice(-6) // últimos 6 mensajes para no exceder contexto
+      // 2. System prompt
+      const sysPrompt = buildSystemPrompt(contractData, userState?.address, payload)
+
+      // 3. Construir historial en formato Gemini (role: user | model, parts: [{text}])
+      const geminiHistory = messages
+        .slice(-6)
         .map(m => ({
-          role: m.role === 'ai' ? 'assistant' : 'user',
-          content: typeof m.content === 'string' ? m.content : JSON.stringify(m.content),
+          role: m.role === 'ai' ? 'model' : 'user',
+          parts: [{
+            text: typeof m.content === 'string' ? m.content : (m.content?.message || '')
+          }]
         }))
+        .filter(m => m.parts[0].text?.trim())
 
       if (trimmedMessage) {
-        history.push({ role: 'user', content: trimmedMessage })
+        geminiHistory.push({ role: 'user', parts: [{ text: trimmedMessage }] })
       }
 
-      // 3. Llamar a la API de Anthropic
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
+      const contents = geminiHistory.length > 0
+        ? geminiHistory
+        : [{ role: 'user', parts: [{ text: trimmedMessage || 'Hola' }] }]
+
+      // 4. Llamar a la API de Gemini
+      const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`
+
+      const response = await fetch(geminiUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-          // Necesario para llamadas desde el navegador
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 600,
-          system: buildSystemPrompt(contractData, userState?.address, payload),
-          messages: history,
+          system_instruction: { parts: [{ text: sysPrompt }] },
+          contents,
+          generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
         }),
       })
 
@@ -176,7 +174,7 @@ export const useAiAssistant = (defaultIntent = 'general') => {
       }
 
       const data = await response.json()
-      const aiText = data?.content?.[0]?.text || 'No response received.'
+      const aiText = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.'
       const aiResponse = { message: aiText, contractData }
 
       setLastResponse(aiResponse)
@@ -220,10 +218,10 @@ function buildMockReply(message = '', userState = {}) {
   if (msg.includes('score') || msg.includes('reputac') || msg.includes('trust')) {
     return {
       message: `Tu Trust Score actual es de **${scoreValue} puntos**. ${scoreValue < 100
-          ? 'Estás comenzando tu historial financiero. Registra más pagos para subir tu reputación.'
-          : scoreValue < 400
-            ? 'Buen progreso. Tu consistencia de pagos está construyendo una reputación sólida.'
-            : 'Excelente reputación. Estás en el top de usuarios de CredLayer AI en tu región y eres totalmente apto para crédito.'
+        ? 'Estás comenzando tu historial financiero. Registra más pagos para subir tu reputación.'
+        : scoreValue < 400
+          ? 'Buen progreso. Tu consistencia de pagos está construyendo una reputación sólida.'
+          : 'Excelente reputación. Estás en el top de usuarios de CredLayer AI en tu región y eres totalmente apto para crédito.'
         } Cada pago verificado on-chain suma puntos a tu perfil.`,
     }
   }

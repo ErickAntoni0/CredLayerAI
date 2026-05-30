@@ -57,6 +57,13 @@ const Payments = () => {
   const pageRef = useRef(null)
   const networkName = chain?.name || 'Network not detected'
 
+  const [selectedToken, setSelectedToken] = useState('USDC')
+  const tokens = [
+    { symbol: 'USDC', label: 'USD Coin', network: 'Ethereum Sepolia', status: 'live', color: 'bg-blue-500' },
+    { symbol: 'MXNB', label: 'Peso Mexicano', network: 'Arbitrum Sepolia', status: 'live', color: 'bg-green-500' },
+    { symbol: 'ETH', label: 'Ethereum', network: 'Ethereum Sepolia', status: 'soon', color: 'bg-violet-500' },
+  ]
+
   useEffect(() => {
     setPageIntent('payments-advice')
     updatePageContext({
@@ -96,7 +103,9 @@ const Payments = () => {
       const { credlayer, usdc } = await getContracts()
 
       // Convertir a 6 decimales (USDC)
-      const amountWei = ethers.parseUnits(String(amountFloat), 6)
+      const decimals = selectedToken === 'ETH' ? 18 : 6
+      const amountWei = ethers.parseUnits(String(amountFloat), decimals)
+      const networklabel = selctedToken === 'MXNB' ? 'Arbitrum Sepolia' : 'Ethereum Sepolia'
 
       // Generar proofHash a partir de los datos del pago
       const raw = `${paymentForm.to}-${amountFloat}-${paymentForm.memo}-${Date.now()}`
@@ -121,7 +130,7 @@ const Payments = () => {
       const newTx = {
         id: Date.now(),
         type: 'Income',
-        amount: `+${paymentForm.amount} USDC`,
+        amount: `+${paymentForm.amount} ${selectedToken}`,
         from: `${paymentForm.to.slice(0, 6)}...${paymentForm.to.slice(-4)}`,
         date: new Date().toLocaleString('en-US', { dateStyle: 'short' }),
         status: 'Verified',
@@ -291,30 +300,59 @@ const Payments = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-bold text-black mb-2">Amount (USDC)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    value={paymentForm.amount}
-                    onChange={(e) => setPaymentForm(prev => ({ ...prev, amount: e.target.value }))}
-                    placeholder="0.00"
-                    required
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition-colors bg-gray-50 focus:bg-white"
-                  />
+              <div>
+                {/* Selector de moneda */}
+                <div className="flex gap-2 mb-4">
+                  {tokens.map((token) => (
+                    <button
+                      key={token.symbol}
+                      type="button"
+                      onClick={() => token.status === 'live' && setSelectedToken(token.symbol)}
+                      className={`relative flex items-center gap-2 px-4 py-2 rounded-xl border transition-all text-sm font-bold
+          ${selectedToken === token.symbol
+                          ? 'bg-black text-white border-black'
+                          : token.status === 'soon'
+                            ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
+                            : 'bg-white text-gray-600 border-gray-200 hover:border-black'
+                        }`}
+                    >
+                      <span className={`w-2 h-2 rounded-full ${token.color}`}></span>
+                      {token.symbol}
+                      {token.status === 'soon' && (
+                        <span className="absolute -top-2 -right-2 text-[9px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded-full font-bold">
+                          SOON
+                        </span>
+                      )}
+                    </button>
+                  ))}
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-black mb-2">Optional Memo</label>
-                  <input
-                    type="text"
-                    value={paymentForm.memo}
-                    onChange={(e) => setPaymentForm(prev => ({ ...prev, memo: e.target.value }))}
-                    placeholder="Payment description..."
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition-colors bg-gray-50 focus:bg-white"
-                  />
-                </div>
+
+                {/* Label dinámico */}
+                <label className="block text-sm font-bold text-black mb-2">
+                  Amount ({selectedToken})
+                  {selectedToken === 'MXNB' && (
+                    <span className="ml-2 text-xs font-normal text-emerald-600">
+                      Peso Mexicano on-chain · Arbitrum Sepolia
+                    </span>
+                  )}
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  value={paymentForm.amount}
+                  onChange={(e) => setPaymentForm(prev => ({ ...prev, amount: e.target.value }))}
+                  placeholder="0.00"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-black transition-colors bg-gray-50 focus:bg-white"
+                />
+
+                {/* Tipo de cambio MXNB */}
+                {selectedToken === 'MXNB' && paymentForm.amount && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    ≈ ${(parseFloat(paymentForm.amount || 0) / 17.5).toFixed(2)} USDC al tipo de cambio actual
+                  </p>
+                )}
               </div>
 
               <button
