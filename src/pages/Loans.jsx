@@ -22,11 +22,27 @@ import {
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { ethers } from 'ethers'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import latamImg from '../assets/latam1.jpg'
+import handsImg from '../assets/imageHands.webp'
 import '../styles/loans.css'
+
+gsap.registerPlugin(ScrollTrigger)
+
+const SPONSORS = [
+  { name: 'alicia.eth', amount: '250 USDC', tier: 'Gold Sponsor', date: 'Just now' },
+  { name: '0x8f2c...31a', amount: '1,200 USDC', tier: 'Community Ally', date: '5m ago' },
+  { name: 'ramon.lens', amount: '350 MXNB', tier: 'Microfinance Ally', date: '12m ago' },
+  { name: '0x3d9a...f4b', amount: '800 USDC', tier: 'Gold Sponsor', date: '30m ago' },
+  { name: 'carlos.stylus', amount: '150 USDC', tier: 'Silver Sponsor', date: '1h ago' },
+  { name: '0xa4b1...e99', amount: '2,500 USDC', tier: 'Lead Sponsor', date: '2h ago' },
+]
 
 const Loans = () => {
   const { address, reputationScore } = useWalletConnection()
   const { data: initialLoansData, isLoading: isLoadingLoans } = useLoansData(address)
+  const tickerRef = useRef(null)
 
   // Balance MXNB
   const [mxnbBalance, setMxnbBalance] = useState('0.00')
@@ -121,6 +137,106 @@ const Loans = () => {
     setRotateX(0)
     setRotateY(0)
   }
+
+  // useLayoutEffect for GSAP animations
+  React.useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      // 1. Initial page stagger entrances
+      gsap.from('.loans-title, .loans-subtitle', {
+        y: 20,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'power3.out'
+      })
+
+      gsap.from('.loan-stat-card', {
+        y: 15,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power2.out',
+        delay: 0.2
+      })
+
+      gsap.from('.backers-ticker-section, .loans-tabs', {
+        y: 15,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        delay: 0.4
+      })
+
+      // 2. Continuous horizontal sponsors ticker loop
+      const ticker = tickerRef.current
+      if (ticker) {
+        const w = ticker.scrollWidth / 2
+        const anim = gsap.to(ticker, {
+          x: -w,
+          ease: 'none',
+          duration: 35,
+          repeat: -1
+        })
+
+        const handleMouseEnter = () => anim.pause()
+        const handleMouseLeave = () => anim.play()
+
+        ticker.addEventListener('mouseenter', handleMouseEnter)
+        ticker.addEventListener('mouseleave', handleMouseLeave)
+
+        // Return cleanup inside context
+        return () => {
+          ticker.removeEventListener('mouseenter', handleMouseEnter)
+          ticker.removeEventListener('mouseleave', handleMouseLeave)
+          anim.kill()
+        }
+      }
+    })
+
+    return () => ctx.revert()
+  }, [])
+
+  // 3. Tab-based fade-in staggers
+  React.useLayoutEffect(() => {
+    let ctx = gsap.context(() => {
+      if (activeTab === 'lend') {
+        gsap.from('.market-loan-card', {
+          y: 20,
+          opacity: 0,
+          scale: 0.96,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: 'cubic-bezier(0.23, 1, 0.32, 1)'
+        })
+      } else if (activeTab === 'borrow') {
+        gsap.from('.borrow-form-card', {
+          x: -20,
+          opacity: 0,
+          scale: 0.98,
+          duration: 0.7,
+          ease: 'cubic-bezier(0.23, 1, 0.32, 1)'
+        })
+        gsap.from('.nft-preview-wrapper', {
+          x: 20,
+          opacity: 0,
+          scale: 0.98,
+          duration: 0.7,
+          ease: 'cubic-bezier(0.23, 1, 0.32, 1)'
+        })
+      } else if (activeTab === 'my') {
+        gsap.from('.my-loan-card', {
+          y: 20,
+          opacity: 0,
+          scale: 0.96,
+          duration: 0.6,
+          stagger: 0.05,
+          ease: 'cubic-bezier(0.23, 1, 0.32, 1)'
+        })
+      }
+    })
+    return () => ctx.revert()
+  }, [activeTab])
 
   // Enviar formulario (Simular creación de NFT de crédito)
   const handleCreateLoan = async (e) => {
@@ -296,13 +412,13 @@ const Loans = () => {
 
       {/* Stats aggregados */}
       <section className="loans-stats">
-        <article className="loan-stat-card border-emerald-500/20 bg-emerald-50/10">
-          <span className="loan-stat-label text-emerald-600 flex items-center gap-1.5 font-bold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <article className="loan-stat-card loan-stat-card--mxnb">
+          <span className="loan-stat-label loan-stat-label--mxnb">
+            <span className="loan-stat-dot"></span>
             MXNB Balance
           </span>
-          <strong className="loan-stat-value text-emerald-600">{Number(mxnbBalance).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
-          <span className="loan-stat-hint text-emerald-500/80">Arbitrum Sepolia Live</span>
+          <strong className="loan-stat-value loan-stat-value--mxnb">{Number(mxnbBalance).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
+          <span className="loan-stat-hint loan-stat-hint--mxnb">Arbitrum Sepolia Live</span>
         </article>
 
         <article className="loan-stat-card">
@@ -328,6 +444,32 @@ const Loans = () => {
           <strong className="loan-stat-value">{metrics.supporters}</strong>
           <span className="loan-stat-hint">Allies with reputation</span>
         </article>
+      </section>
+
+      {/* Endless Horizontal Backers Ticker (tasteskill.dev style) */}
+      <section className="backers-ticker-section">
+        <div className="backers-ticker-title">
+          <Sparkles size={12} style={{ color: '#eab308' }} />
+          Live Community Support Ticker
+        </div>
+        <div className="backers-ticker-viewport">
+          <div className="backers-ticker-track" ref={tickerRef}>
+            {[...SPONSORS, ...SPONSORS].map((sponsor, index) => (
+              <div key={index} className="backers-ticker-card">
+                <div className="ticker-card-top">
+                  <span className="ticker-backer-name">{sponsor.name}</span>
+                  <span className="ticker-backer-date">{sponsor.date}</span>
+                </div>
+                <div className="ticker-card-body">
+                  <span className="ticker-backer-amount">{sponsor.amount}</span>
+                  <span className="ticker-backer-tier">
+                    {sponsor.tier}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Tabs */}
@@ -438,7 +580,7 @@ const Loans = () => {
                 </p>
               </div>
 
-              <button type="submit" className="borrow-submit-btn bg-black text-white hover:bg-zinc-800 transition-colors" disabled={isSubmitting}>
+              <button type="submit" className="borrow-submit-btn" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>Creating & Minting NFT...</>
                 ) : (
@@ -561,7 +703,7 @@ const Loans = () => {
                   </div>
 
                   <button
-                    className="lend-btn bg-black text-white hover:bg-zinc-800 transition-colors"
+                    className="lend-btn"
                     onClick={() => handleLend(loan)}
                     disabled={isFunding === loan.id || loan.funded >= 100}
                   >
@@ -583,6 +725,31 @@ const Loans = () => {
               ))}
             </div>
           )}
+
+          {/* LATAM Credit Impact Bento Banner */}
+          <div className="latam-impact-banner">
+            <div className="latam-impact-text">
+              <span className="latam-impact-tag">Impacto Regional</span>
+              <h3>Impulsando el crecimiento en América Latina</h3>
+              <p>
+                Cada microcrédito financiado a través de CredLayer impulsa directamente a emprendedores locales a expandir sus negocios y evitar tasas de interés abusivas. Tu soporte financiero genera valor real y fortalece la resiliencia económica de la comunidad.
+              </p>
+              <div className="latam-impact-metrics">
+                <div className="latam-metric">
+                  <strong>+320</strong>
+                  <span>Emprendedores</span>
+                </div>
+                <div className="latam-metric">
+                  <strong>100%</strong>
+                  <span>Transparencia Web3</span>
+                </div>
+              </div>
+            </div>
+            <div className="latam-impact-image-container">
+              <img src={latamImg} alt="Impacto Comunitario en LATAM" className="latam-impact-img" />
+              <div className="latam-impact-overlay"></div>
+            </div>
+          </div>
         </section>
       )}
 
@@ -631,14 +798,14 @@ const Loans = () => {
                   {loan.status === 'active' ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '1rem' }}>
                       <button
-                        className="repay-btn bg-emerald-500 text-white hover:bg-emerald-600 transition-colors w-full flex items-center justify-center gap-1.5"
+                        className="repay-btn repay-btn--usdc"
                         onClick={() => handleRepay(loan.id, loan.nextPayment)}
                       >
                         <Check size={16} />
                         Pay Installment (USDC)
                       </button>
                       <button
-                        className="repay-btn bg-blue-600 text-white hover:bg-blue-700 transition-colors w-full flex items-center justify-center gap-1.5"
+                        className="repay-btn repay-btn--mxnb"
                         onClick={() => {
                           const valInMxn = (parseFloat(loan.amount) * 17.5).toFixed(2);
                           handleRepay(loan.id, `${valInMxn} MXNB`);
@@ -670,16 +837,7 @@ const Loans = () => {
             </div>
 
             {/* Visual Backer Certificate NFT */}
-            <div style={{
-              width: '100%',
-              background: 'linear-gradient(135deg, #18181b 0%, #27272a 100%)',
-              border: '2px solid #eab308',
-              borderRadius: '20px',
-              padding: '2rem',
-              boxShadow: '0 0 30px rgba(234, 179, 8, 0.3)',
-              position: 'relative',
-              overflow: 'hidden'
-            }}>
+            <div className="visual-backer-nft">
               {/* Glowing ring */}
               <div style={{
                 position: 'absolute',

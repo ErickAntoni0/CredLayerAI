@@ -1,12 +1,28 @@
 /* src/styles/loans.css */
-/* Visual styling for CredLayer AI Loans Page with 3D Reputation NFTs */
+/* Visual styling for CredLayer AI Loans Page with 3D Reputation NFTs & Backers Marquee Ticker */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* Main resets & transitions */
+.loans-container * {
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
+              border-color 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
+              transform 0.15s cubic-bezier(0.23, 1, 0.32, 1);
+}
 
 .loans-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 3rem 2.5rem;
-  font-family: 'Inter', sans-serif;
-  color: #111111;
+  color: #0a0a0a;
+}
+
+/* Page background wrapper injection if needed, but styling container directly */
+body {
+  background: #f8f9fa !important;
 }
 
 /* Header & Intro */
@@ -14,117 +30,262 @@
   margin-bottom: 3rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .loans-title {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
   font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 0.95;
-  color: #000000;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #0a0a0a;
+  margin: 0;
 }
 
 .loans-subtitle {
-  font-size: 1.15rem;
-  color: #52525b;
+  font-size: 1rem;
+  color: #6b6b6b;
   max-width: 720px;
   line-height: 1.6;
+  margin: 0;
 }
 
 /* Stat Cards */
 .loans-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
 }
 
 .loan-stat-card {
   background: #ffffff;
-  border: 1px solid #e4e4e7;
-  border-radius: 24px;
-  padding: 1.75rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: border-color 0.25s ease;
 }
 
 .loan-stat-card:hover {
-  border-color: #000000;
+  border-color: #0a0a0a;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.03);
 }
 
 .loan-stat-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #71717a;
+  letter-spacing: 0.06em;
+  color: #888;
 }
 
 .loan-stat-value {
-  font-size: 1.85rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: #000000;
+  color: #0a0a0a;
+  letter-spacing: -0.03em;
 }
 
 .loan-stat-hint {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #a1a1aa;
+}
+
+/* MXNB Balance Card Spec */
+.loan-stat-card--mxnb {
+  background: rgba(16, 185, 129, 0.03);
+  border-color: rgba(16, 185, 129, 0.12);
+}
+
+.loan-stat-card--mxnb:hover {
+  border-color: #10b981;
+  box-shadow: 0 6px 24px rgba(16, 185, 129, 0.05);
+}
+
+.loan-stat-label--mxnb {
+  color: #059669;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.loan-stat-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #10b981;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse-dot 1.8s infinite;
+}
+
+@keyframes pulse-dot {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.loan-stat-value--mxnb {
+  color: #059669;
+}
+
+.loan-stat-hint--mxnb {
+  color: rgba(5, 150, 105, 0.7);
+}
+
+/* Live Backers Ticker (tasteskill.dev style) */
+.backers-ticker-section {
+  margin: 0 auto 3rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  overflow: hidden;
+}
+
+.backers-ticker-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.backers-ticker-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.backers-ticker-track {
+  display: flex;
+  gap: 20px;
+  width: max-content;
+}
+
+.backers-ticker-card {
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 14px 18px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.backers-ticker-card:hover {
+  background: #ffffff;
+  border-color: #0a0a0a;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transform: translateY(-2px);
+}
+
+.backers-ticker-card:active {
+  transform: scale(0.97);
+}
+
+.ticker-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticker-backer-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0a0a0a;
+}
+
+.ticker-backer-date {
+  font-size: 0.68rem;
+  color: #888;
+}
+
+.ticker-card-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticker-backer-amount {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.ticker-backer-tier {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 100px;
+  background: rgba(0, 0, 0, 0.04);
+  color: #6b6b6b;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 /* Tabs Navigation */
 .loans-tabs {
   display: flex;
-  gap: 1rem;
-  border-bottom: 1px solid #e4e4e7;
-  padding-bottom: 1rem;
-  margin-bottom: 3rem;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding-bottom: 0.75rem;
+  margin-bottom: 2.5rem;
   overflow-x: auto;
 }
 
 .loans-tab-btn {
   background: none;
   border: none;
-  font-size: 1rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: #71717a;
-  padding: 0.5rem 1rem;
+  color: #6b6b6b;
+  padding: 8px 16px;
+  border-radius: 100px;
   cursor: pointer;
   position: relative;
-  transition: color 0.2s ease;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-
 .loans-tab-btn:hover {
-  color: #000000;
+  color: #0a0a0a;
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .loans-tab-btn.active {
-  color: #000000;
+  color: #ffffff;
+  background: #0a0a0a;
+}
+
+.loans-tab-btn:active {
+  transform: scale(0.96);
 }
 
 .loans-tab-btn.active::after {
-  content: '';
-  position: absolute;
-  bottom: -1rem;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #000000;
+  display: none; /* Removed the ugly line indicator in favor of premium active capsule pill background */
 }
 
 /* 3D CREDIT NFT SECTION */
 .borrow-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4rem;
+  gap: 2.5rem;
   align-items: start;
 }
 
@@ -137,7 +298,7 @@
 /* Glassmorphism NFT Preview Card (Cinematic Dark Mode) */
 .nft-preview-wrapper {
   background: #09090b;
-  border-radius: 32px;
+  border-radius: 28px;
   padding: 3rem 2rem;
   display: flex;
   flex-direction: column;
@@ -163,8 +324,8 @@
 
 /* 3D Card Mechanics */
 .nft-scene {
-  width: 320px;
-  height: 420px;
+  width: 310px;
+  height: 400px;
   perspective: 1000px;
 }
 
@@ -173,7 +334,7 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.1s ease-out;
+  transition: transform 0.12s cubic-bezier(0.23, 1, 0.32, 1);
   cursor: grab;
 }
 
@@ -186,16 +347,17 @@
   width: 100%;
   height: 100%;
   backface-visibility: hidden;
-  background: linear-gradient(135deg, rgba(24, 24, 27, 0.85) 0%, rgba(9, 9, 11, 0.95) 100%);
-  border: 1.5px solid rgba(255, 255, 255, 0.1);
-  border-radius: 24px;
-  padding: 2rem;
+  background: linear-gradient(135deg, rgba(24, 24, 27, 0.75) 0%, rgba(9, 9, 11, 0.9) 100%), 
+              url('../assets/credit_card_bg.png') no-repeat center center;
+  background-size: cover;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 1.75rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   overflow: hidden;
-  transition: border-color 0.5s ease, box-shadow 0.5s ease;
 }
 
 /* Hologram Overlay */
@@ -206,7 +368,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
   transform: rotate(30deg);
   pointer-events: none;
 }
@@ -244,7 +406,7 @@
 }
 
 .nft-tag-chip {
-  padding: 0.3rem 0.75rem;
+  padding: 4px 10px;
   border-radius: 99px;
   font-size: 0.65rem;
   font-weight: 700;
@@ -350,23 +512,25 @@
 /* Borrow Form */
 .borrow-form-card {
   background: #ffffff;
-  border: 1px solid #e4e4e7;
-  border-radius: 28px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
 }
 
 .borrow-form-title {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 800;
   margin-bottom: 0.5rem;
-  color: #000000;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
 }
 
 .borrow-form-subtitle {
-  font-size: 0.9rem;
-  color: #71717a;
+  font-size: 0.85rem;
+  color: #6b6b6b;
   margin-bottom: 2rem;
+  line-height: 1.4;
 }
 
 .form-group {
@@ -375,27 +539,29 @@
 
 .form-label {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #000000;
-  margin-bottom: 0.5rem;
+  color: #3d3d3d;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .form-input {
   width: 100%;
-  background: #f4f4f5;
-  border: 1px solid #e4e4e7;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 12px;
-  padding: 0.8rem 1rem;
-  font-size: 0.95rem;
-  color: #111111;
-  transition: all 0.2s ease;
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  color: #0a0a0a;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #000000;
+  border-color: #0a0a0a;
   background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.05);
 }
 
 .form-row {
@@ -406,28 +572,31 @@
 
 .borrow-submit-btn {
   width: 100%;
-  background: #000000;
+  background: #0a0a0a;
   color: #ffffff;
   border: none;
-  border-radius: 14px;
-  padding: 1rem;
+  border-radius: 12px;
+  padding: 15px 20px;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   margin-top: 1.5rem;
-  transition: background 0.2s ease, transform 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.borrow-submit-btn:hover {
-  background: #27272a;
+.borrow-submit-btn:hover:not(:disabled) {
+  background: #222;
+}
+
+.borrow-submit-btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .borrow-submit-btn:disabled {
-  background: #a1a1aa;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -441,10 +610,10 @@
 /* Loan Card (Borrower NFT Representation) */
 .market-loan-card {
   background: #ffffff;
-  border: 1px solid #e4e4e7;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 24px;
-  padding: 1.75rem;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 2rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -453,8 +622,8 @@
 
 .market-loan-card:hover {
   transform: translateY(-4px);
-  border-color: #000000;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+  border-color: #0a0a0a;
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.05), 0 1px 5px rgba(0, 0, 0, 0.02);
 }
 
 .market-card-top {
@@ -466,33 +635,43 @@
 
 .market-borrower-ens {
   font-weight: 800;
-  font-size: 1rem;
-  color: #000000;
+  font-size: 0.95rem;
+  color: #0a0a0a;
 }
 
 .market-risk-badge {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  padding: 0.25rem 0.6rem;
+  padding: 4px 10px;
   border-radius: 99px;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid;
 }
 
-.market-risk-badge.risk-baja {
-  background: #ecfdf5;
+.market-risk-badge.risk-low {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.2);
   color: #059669;
 }
 
-.market-risk-badge.risk-media {
-  background: #fffbeb;
+.market-risk-badge.risk-medium {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.2);
   color: #d97706;
 }
 
+.market-risk-badge.risk-high {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+}
+
 .market-purpose {
-  font-size: 0.95rem;
-  color: #111111;
+  font-size: 0.9rem;
+  color: #3d3d3d;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.5;
   margin-bottom: 1.5rem;
   min-height: 2.8rem;
 }
@@ -501,7 +680,8 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 1.5rem;
-  background: #f4f4f5;
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   padding: 0.75rem 1rem;
   border-radius: 12px;
 }
@@ -509,19 +689,21 @@
 .market-stat {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .market-stat-lbl {
-  font-size: 0.65rem;
-  color: #71717a;
+  font-size: 0.62rem;
+  color: #888;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .market-stat-val {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #000000;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #0a0a0a;
 }
 
 /* Funding Progress Bar */
@@ -532,43 +714,53 @@
 .funding-progress-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 6px;
+  color: #3d3d3d;
 }
 
 .funding-progress-bar {
   width: 100%;
-  height: 6px;
-  background: #e4e4e7;
-  border-radius: 3px;
+  height: 5px;
+  background: #e8e8e8;
+  border-radius: 100px;
   overflow: hidden;
 }
 
 .funding-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #10b981);
-  border-radius: 3px;
+  background: #0a0a0a;
+  border-radius: 100px;
 }
 
 .lend-btn {
   width: 100%;
-  background: #000000;
+  background: #0a0a0a;
   color: #ffffff;
   border: none;
   border-radius: 12px;
-  padding: 0.85rem;
+  padding: 12px;
   font-weight: 700;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.lend-btn:hover {
-  background: #27272a;
+.lend-btn:hover:not(:disabled) {
+  background: #222;
+}
+
+.lend-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.lend-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* MY LOANS GRID */
@@ -580,9 +772,10 @@
 
 .my-loan-card {
   background: #ffffff;
-  border: 1px solid #e4e4e7;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   border-radius: 24px;
-  padding: 1.75rem;
+  padding: 2rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -592,57 +785,61 @@
 }
 
 .my-loan-card.status-active {
-  border-left: 5px solid #10b981;
+  border-left: 4px solid #10b981;
 }
 
 .my-loan-card.status-repaid {
-  border-left: 5px solid #eab308;
+  border-left: 4px solid #eab308;
 }
 
 .my-card-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  align-items: center;
 }
 
 .my-card-status {
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.25rem 0.60rem;
+  padding: 4px 10px;
   border-radius: 99px;
+  letter-spacing: 0.04em;
 }
 
 .status-active .my-card-status {
-  background: #d1fae5;
+  background: rgba(16, 185, 129, 0.08);
   color: #065f46;
 }
 
 .status-repaid .my-card-status {
-  background: #fef9c3;
+  background: rgba(234, 179, 8, 0.08);
   color: #854d0e;
 }
 
 .my-loan-impact {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
-  padding: 0.25rem 0.5rem;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 4px 8px;
   border-radius: 6px;
 }
 
 .my-loan-purpose {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #000000;
+  color: #0a0a0a;
   margin-bottom: 1.25rem;
+  letter-spacing: -0.01em;
 }
 
 .my-loan-details {
-  background: #f4f4f5;
+  background: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.04);
   border-radius: 12px;
-  padding: 0.85rem;
+  padding: 12px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
@@ -652,40 +849,60 @@
 .my-detail-item {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .my-detail-item label {
-  font-size: 0.65rem;
-  color: #71717a;
+  font-size: 0.62rem;
+  color: #888;
   text-transform: uppercase;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: 0.04em;
 }
 
 .my-detail-item span {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #000000;
+  color: #0a0a0a;
 }
 
-/* Repay Action */
+/* Repay Action Buttons */
 .repay-btn {
   width: 100%;
-  background: #10b981;
-  color: #ffffff;
   border: none;
   border-radius: 12px;
-  padding: 0.85rem;
+  padding: 12px;
   font-weight: 700;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: background 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.repay-btn:hover {
-  background: #059669;
+.repay-btn:active {
+  transform: scale(0.97);
+}
+
+.repay-btn--usdc {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+.repay-btn--usdc:hover {
+  background: #222;
+}
+
+.repay-btn--mxnb {
+  background: transparent;
+  color: #0a0a0a;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.repay-btn--mxnb:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: #0a0a0a;
 }
 
 /* NFT Modal Certificate */
@@ -695,7 +912,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
@@ -707,9 +924,9 @@
 .nft-modal-card {
   background: #09090b;
   border: 1px solid #27272a;
-  border-radius: 32px;
+  border-radius: 28px;
   width: 100%;
-  max-width: 460px;
+  max-width: 440px;
   padding: 2.5rem 2rem;
   text-align: center;
   color: #ffffff;
@@ -721,30 +938,157 @@
 }
 
 .nft-modal-title {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 900;
   color: #ffffff;
   line-height: 1.2;
 }
 
 .nft-modal-subtitle {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   color: #a1a1aa;
+  line-height: 1.4;
 }
 
 .nft-modal-btn {
   background: #ffffff;
   color: #000000;
   border: none;
-  border-radius: 14px;
-  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  padding: 12px 24px;
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: opacity 0.2s ease;
   width: 100%;
 }
 
 .nft-modal-btn:hover {
-  opacity: 0.9;
+  background: #f4f4f5;
+}
+
+.nft-modal-btn:active {
+  transform: scale(0.97);
+}
+
+/* Visual Backer NFT Certificate with image hands background */
+.visual-backer-nft {
+  width: 100%;
+  background: linear-gradient(135deg, rgba(24, 24, 27, 0.8) 0%, rgba(9, 9, 11, 0.95) 100%),
+              url('../assets/imageHands.webp') no-repeat center center;
+  background-size: cover;
+  border: 1px solid #eab308;
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(234, 179, 8, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+/* LATAM Credit Impact Bento Card */
+.latam-impact-banner {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 2.5rem;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  margin-top: 3.5rem;
+  align-items: center;
+}
+
+.latam-impact-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.latam-impact-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #059669;
+  background: rgba(16, 185, 129, 0.08);
+  padding: 4px 10px;
+  border-radius: 100px;
+  width: fit-content;
+}
+
+.latam-impact-text h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0a0a0a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.latam-impact-text p {
+  font-size: 0.9rem;
+  color: #6b6b6b;
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+
+.latam-impact-metrics {
+  display: flex;
+  gap: 2rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 1.25rem;
+}
+
+.latam-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.latam-metric strong {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.latam-metric span {
+  font-size: 0.75rem;
+  color: #888;
+}
+
+.latam-impact-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.latam-impact-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.latam-impact-banner:hover .latam-impact-img {
+  transform: scale(1.06);
+}
+
+.latam-impact-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.25) 100%);
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .latam-impact-banner {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+    gap: 2rem;
+  }
+  .latam-impact-image-container {
+    height: 200px;
+  }
 }

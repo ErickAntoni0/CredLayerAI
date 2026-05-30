@@ -189,7 +189,7 @@ const Dashboard = () => {
       try {
         const saved = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
         if (saved.length > 0) setTransactionData(saved)
-      } catch (_) {}
+      } catch (_) { }
     }
   }, [activeTab])
 
