@@ -74,10 +74,10 @@ const Dashboard = () => {
       if (saved.length > 0) return saved
     } catch (_) { }
     return [
-      { id: 1, type: 'Income', amount: '+0.02 USDC', from: '0x70Dd...F09c', date: 'Today, 22:37', status: 'Verified', hash: '0xf6db75d01d18ff01d9337a6202621bdd27e9ce723f9d6136dd9ea13810284973' },
-      { id: 2, type: 'Expense', amount: '-150 USDC', from: 'Supplier 0x9B4a...', date: 'Yesterday, 2:15 PM', status: 'Verified', hash: '0xa02cbe5a2a3a99c8164ad8bc75f553260b8278d02651f8b5f65fee86d91239a5' },
-      { id: 3, type: 'Income', amount: '+1200 USDC', from: 'Client 0x1F2d...', date: 'Oct 12, 09:00 AM', status: 'Verified', hash: '0xc57d126158440bc5b64572958e0caf3b4d74830071f10746be7f3fbe24a0d610' },
-      { id: 4, type: 'Expense', amount: '-300 USDC', from: 'Rent 0x7C10...', date: 'Oct 10, 11:45 AM', status: 'Verified', hash: '0xab951f037612d9d065f073d7a5298735f445a004b42832c582e86275fdd0ad9b' },
+      { id: 1, type: 'Income', amount: '+500 USDC', from: 'Cliente 0x70Dd...f09c', date: 'Jun 1, 10:30 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 2, type: 'Income', amount: '+0.02 USDC', from: 'Cliente 0x70Dd...f09c', date: 'May 28, 3:52 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 3, type: 'Expense', amount: '-150 USDC', from: 'Proveedor 0x9B4a...', date: 'May 27, 2:15 PM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 4, type: 'Income', amount: '+1200 USDC', from: 'Cliente 0x1F2d...', date: 'May 26, 9:00 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
     ]
   })
 
@@ -285,7 +285,7 @@ const Dashboard = () => {
         </h1>
         <p className="text-gray-500 max-w-md mx-auto mb-10 text-lg leading-relaxed">
           {chain?.unsupported
-            ? 'Please switch to Sepolia to view your financial reputation and analysis.'
+            ? 'Switch back to Sepolia to view your Trust Score. Your MXNB payment on Arbitrum was registered successfully.'
             : 'Access your portable financial reputation, on-chain proofs, and NOVA AI analysis by connecting your wallet.'}
         </p>
         {chain?.unsupported ? (

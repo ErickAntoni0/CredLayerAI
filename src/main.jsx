@@ -22,13 +22,15 @@ import App from './App'
 import './index.css'
 import './styles/membership-theme.css'
 
-// Configuración de chains y provider (usa tu RPC de Sepolia si está definido)
-const RPC_SEPOLIA = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEPOLIA_RPC_URL) || ''
+// Sepolia: publicnode por defecto (rpc.sepolia.org suele fallar); override con VITE_SEPOLIA_RPC_URL
+const RPC_SEPOLIA =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEPOLIA_RPC_URL) ||
+  'https://ethereum-sepolia-rpc.publicnode.com'
 const { chains, publicClient } = configureChains(
   [sepolia, arbitrum, arbitrumGoerli, mainnet],
   [
     jsonRpcProvider({
-      rpc: (chain) => (chain.id === sepolia.id && RPC_SEPOLIA ? { http: RPC_SEPOLIA } : null)
+      rpc: (chain) => (chain.id === sepolia.id ? { http: RPC_SEPOLIA } : null)
     }),
     publicProvider()
   ]
