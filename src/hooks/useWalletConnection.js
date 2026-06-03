@@ -6,14 +6,16 @@ export const useWalletConnection = () => {
   const { address, isConnected, connector } = useAccount();
   const { connect, connectors, error, isLoading } = useConnect();
   const { disconnect } = useDisconnect();
-  
+
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  
+
   const [userProfile, setUserProfile] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [ensName, setEnsName] = useState('');
-  const [reputationScore, setReputationScore] = useState(0);
+  const [reputationScore, setReputationScore] = useState(() => {
+    return parseInt(localStorage.getItem('reputationScore') || '580');
+  });
 
   // Servicios simplificados (sin dependencias externas)
   const ensService = useMemo(() => ({
@@ -22,7 +24,7 @@ export const useWalletConnection = () => {
       return true;
     }
   }), []);
-  
+
   const reputationService = useMemo(() => ({
     getENSProfile: async (walletAddress) => {
       if (!walletAddress) return null;
@@ -30,7 +32,7 @@ export const useWalletConnection = () => {
         address: walletAddress,
         ensName: `user${walletAddress.slice(2, 6)}.micro.eth`,
         subdomain: `user${walletAddress.slice(2, 6)}`,
-        reputationScore: Math.floor(Math.random() * 500) + 200,
+        reputationScore: 0,
         registrationTime: Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000,
         lastActivity: Date.now(),
         isActive: true,
@@ -107,7 +109,7 @@ export const useWalletConnection = () => {
     try {
       // 1. Verificar si el usuario está registrado en MicroPay MX
       const microPayProfile = await reputationService.getENSProfile(userAddress);
-      
+
       if (microPayProfile) {
         // Usuario registrado en MicroPay MX
         setUserProfile({
@@ -115,9 +117,10 @@ export const useWalletConnection = () => {
           platform: 'micropay',
           isRegistered: true
         });
-        setEnsName(microPayProfile.subdomain);
-        setReputationScore(microPayProfile.reputationScore);
-        
+        setEnsName(microPayProfile.subdomain)
+        const savedScore = parseInt(localStorage.getItem('reputationScore') || '580');
+        setReputationScore(savedScore);
+
         // 2. Verificar si también está en CulturaChain
         const culturaProfile = await reputationService.getCulturaChainProfile(userAddress);
         if (culturaProfile) {
@@ -149,7 +152,7 @@ export const useWalletConnection = () => {
 
     try {
       setIsLoadingProfile(true);
-      
+
       // 1. Verificar propiedad del ENS
       const ownsENS = await ensService.verifyOwnership(address, ensName);
       if (!ownsENS) {
@@ -164,10 +167,10 @@ export const useWalletConnection = () => {
       );
 
       toast.success('Usuario registrado en MicroPay MX');
-      
+
       // 3. Recargar perfil
       await loadUserProfile(address);
-      
+
       return registrationTx;
     } catch (error) {
       console.error('Error registrando usuario:', error);
@@ -186,7 +189,7 @@ export const useWalletConnection = () => {
 
     try {
       setIsLoadingProfile(true);
-      
+
       const registrationTx = await reputationService.registerCulturaChainUser(
         address,
         creatorCategory,
@@ -194,10 +197,10 @@ export const useWalletConnection = () => {
       );
 
       toast.success('Usuario registrado en CulturaChain MX');
-      
+
       // Recargar perfil
       await loadUserProfile(address);
-      
+
       return registrationTx;
     } catch (error) {
       console.error('Error registrando en CulturaChain:', error);
@@ -215,13 +218,13 @@ export const useWalletConnection = () => {
     try {
       // Actualizar reputación en la plataforma específica
       await reputationService.updateReputation(address, platform, points, reason);
-      
+
       // Sincronizar reputación entre plataformas
       await reputationService.syncReputationAcrossPlatforms(address);
-      
+
       // Recargar perfil
       await loadUserProfile(address);
-      
+
       toast.success(`Reputación actualizada en ${platform}`);
     } catch (error) {
       console.error('Error actualizando reputación:', error);
@@ -229,12 +232,42 @@ export const useWalletConnection = () => {
     }
   }, [address, reputationService, loadUserProfile]);
 
-  // Efecto para cargar perfil cuando se conecta la wallet
+// Detectar cambios de red en tiempo real
+useEffect(() => {
+  if (!chain) return
+  
+  const chainName = chain.id === 11155111 
+    ? 'Ethereum Sepolia' 
+    : chain.id === 421614 
+    ? 'Arbitrum Sepolia' 
+    : chain.name
+
+  toast.success(`Red detectada: ${chainName}`, {
+    id: 'network-change', // evita duplicados
+    duration: 2000,
+    icon: '🔗'
+  })
+}, [chain?.id])
+
+  // Cargar perfil automáticamente al conectar la wallet o cambiar de dirección
   useEffect(() => {
     if (isConnected && address) {
       loadUserProfile(address);
+    } else {
+      setUserProfile(null);
+      setEnsName('');
     }
   }, [isConnected, address, loadUserProfile]);
+
+  // Sincronizar reputación local desde localStorage ante eventos
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedScore = parseInt(localStorage.getItem('reputationScore') || '580');
+      setReputationScore(savedScore);
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   return {
     // Estado
@@ -247,7 +280,7 @@ export const useWalletConnection = () => {
     reputationScore,
     isLoading,
     error,
-    
+
     // Acciones
     connectWallet,
     disconnectWallet,
@@ -255,10 +288,15 @@ export const useWalletConnection = () => {
     registerCulturaChainUser,
     updateCrossPlatformReputation,
     loadUserProfile,
-    updateScore: (points) => setReputationScore(prev => prev + points),
+    updateScore: (points) => setReputationScore(prev => {
+      const next = prev + points;
+      localStorage.setItem('reputationScore', next.toString());
+      window.dispatchEvent(new Event('storage'));
+      return next;
+    }),
     chain,
     switchNetwork,
-    
+
     // Utilidades
     connectors: connectors.map(conn => ({
       id: conn.id,

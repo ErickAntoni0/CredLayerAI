@@ -12,8 +12,10 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { jsPDF } from 'jspdf'
 import { toast } from 'react-hot-toast'
 import { ethers } from 'ethers'
+import '../styles/loader.css';
 // ─── Hook de contrato real ────────────────────────────────────────────────────
 import { useTrustScore, useUserPayments, CREDLAYER_ADDRESS, getExplorerUrl, getAddressUrl } from '../hooks/useCredLayer'
+import { SEPOLIA_CHAIN_ID, ARBITRUM_SEPOLIA_CHAIN_ID, SEPOLIA_RPC, ARBITRUM_SEPOLIA_RPC, ensureSepoliaNetwork, ensureArbitrumSepoliaNetwork } from '../config/chains'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -59,7 +61,7 @@ const tabs = [
 
 const Dashboard = () => {
   const contentRef = useRef(null)
-  const { userProfile, isLoadingProfile, address, isConnected, connectWallet, connectors, chain, switchNetwork } = useWalletConnection()
+  const { userProfile, isLoadingProfile, address, isConnected, connectWallet, connectors, chain, switchNetwork, reputationScore } = useWalletConnection()
   const { data: paymentsData, isLoading: isLoadingPayments } = usePaymentsData(address)
   const { setPageIntent, updatePageContext } = useAiAssistantContext()
   const [activeTab, setActiveTab] = useState('overview')
@@ -81,11 +83,12 @@ const Dashboard = () => {
     ]
   })
 
-  const fetchReceipt = async (txHash) => {
+  const fetchReceipt = async (txHash, isMxnb = false) => {
     if (receipts[txHash] || loadingReceipts[txHash]) return
     setLoadingReceipts(prev => ({ ...prev, [txHash]: true }))
     try {
-      const provider = new ethers.JsonRpcProvider('https://ethereum-sepolia-rpc.publicnode.com')
+      const rpcUrl = isMxnb ? ARBITRUM_SEPOLIA_RPC : SEPOLIA_RPC
+      const provider = new ethers.JsonRpcProvider(rpcUrl)
       const receipt = await provider.getTransactionReceipt(txHash)
       if (receipt) {
         // ethers v6: confirmations es async
@@ -102,7 +105,7 @@ const Dashboard = () => {
             gasUsed: gasUsed,
             confirmations: Number(confirmations),
             status: receipt.status === 1 ? 'Success' : 'Failed',
-            network: 'Arbitrum Sepolia (Live)'
+            network: isMxnb ? 'Arbitrum Sepolia (Live)' : 'Ethereum Sepolia (Live)'
           }
         }))
       } else {
@@ -117,7 +120,7 @@ const Dashboard = () => {
             gasUsed: '84,231',
             confirmations: 12 + Math.floor(Math.random() * 100),
             status: 'Success',
-            network: 'Arbitrum Sepolia Testnet'
+            network: isMxnb ? 'Arbitrum Sepolia Testnet' : 'Ethereum Sepolia Testnet'
           }
         }))
       }, 600)
@@ -131,7 +134,8 @@ const Dashboard = () => {
       setExpandedTx(null)
     } else {
       setExpandedTx(tx.hash)
-      fetchReceipt(tx.hash)
+      const isMxnb = tx.amount?.includes('MXNB')
+      fetchReceipt(tx.hash, isMxnb)
     }
   }
 
@@ -139,9 +143,37 @@ const Dashboard = () => {
   const { score: onChainScore, isLoading: isLoadingScore, refetch: refetchScore } = useTrustScore()
   const { paymentIds, refetch: refetchPayments } = useUserPayments()
 
-  // El score que mostramos: primero el real del contrato, fallback al perfil local
-  const displayScore = onChainScore > 0 ? onChainScore : (userProfile?.reputationScore || 0)
+  // Trust Score real del contrato Sepolia si es mayor que cero; si no, reputación local
+  const displayScore = onChainScore > 0 ? onChainScore : (reputationScore ?? 0)
   const totalOnChainTxs = paymentIds.length
+  const needsNetworkSwitch = isConnected && chain?.id !== SEPOLIA_CHAIN_ID && chain?.id !== ARBITRUM_SEPOLIA_CHAIN_ID
+
+  const handleSwitchToSepolia = async () => {
+    try {
+      await ensureSepoliaNetwork(switchNetwork)
+      refetchScore()
+      refetchPayments()
+    } catch (err) {
+      toast.error(`Could not switch network: ${err.message}`)
+    }
+  }
+
+  const handleSwitchToArbitrumSepolia = async () => {
+    try {
+      await ensureArbitrumSepoliaNetwork(switchNetwork)
+      refetchScore()
+      refetchPayments()
+    } catch (err) {
+      toast.error(`Could not switch network: ${err.message}`)
+    }
+  }
+
+  const loadTransactionsFromStorage = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+      if (saved.length > 0) setTransactionData(saved)
+    } catch (_) { }
+  }
 
   const metrics = paymentsData?.metrics || {
     totalVolumeUsdFormatted: '$2,450.00',
@@ -185,13 +217,18 @@ const Dashboard = () => {
   }, [activeTab])
 
   useEffect(() => {
-    if (activeTab === 'transactions') {
-      try {
-        const saved = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
-        if (saved.length > 0) setTransactionData(saved)
-      } catch (_) { }
-    }
+    loadTransactionsFromStorage()
   }, [activeTab])
+
+  useEffect(() => {
+    const onTxUpdate = () => loadTransactionsFromStorage()
+    window.addEventListener('creedlayer-txs-updated', onTxUpdate)
+    window.addEventListener('storage', onTxUpdate)
+    return () => {
+      window.removeEventListener('creedlayer-txs-updated', onTxUpdate)
+      window.removeEventListener('storage', onTxUpdate)
+    }
+  }, [])
 
   if (isLoadingProfile) {
     return (
@@ -274,27 +311,35 @@ const Dashboard = () => {
     }, 2000)
   }
 
-  if (!isConnected || chain?.unsupported) {
+  if (!isConnected || needsNetworkSwitch) {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
         <div className="w-24 h-24 bg-gray-50 rounded-3xl flex items-center justify-center text-black mb-8 animate-bounce">
           <Wallet size={48} />
         </div>
         <h1 className="text-4xl font-black text-black mb-4 tracking-tight">
-          {chain?.unsupported ? 'Unsupported Network' : 'Connect your business'}
+          {needsNetworkSwitch ? 'Switch to a supported network' : 'Connect your business'}
         </h1>
         <p className="text-gray-500 max-w-md mx-auto mb-10 text-lg leading-relaxed">
-          {chain?.unsupported
-            ? 'Switch back to Sepolia to view your Trust Score. Your MXNB payment on Arbitrum was registered successfully.'
+          {needsNetworkSwitch
+            ? 'Switch to Sepolia or Arbitrum Sepolia to view your Trust Score and verify your reputation.'
             : 'Access your portable financial reputation, on-chain proofs, and NOVA AI analysis by connecting your wallet.'}
         </p>
-        {chain?.unsupported ? (
-          <button
-            onClick={() => switchNetwork?.(11155111)}
-            className="flex items-center gap-3 px-8 py-4 bg-black text-white rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-xl hover:scale-105 active:scale-95"
-          >
-            <Sparkles size={20} /> Switch to Sepolia
-          </button>
+        {needsNetworkSwitch ? (
+          <div className="flex flex-col sm:flex-row gap-4">
+            <button
+              onClick={handleSwitchToSepolia}
+              className="flex items-center justify-center gap-3 px-8 py-4 bg-black text-white rounded-2xl font-bold hover:bg-gray-800 transition-all shadow-xl hover:scale-105 active:scale-95"
+            >
+              <Sparkles size={20} /> Switch to Sepolia
+            </button>
+            <button
+              onClick={handleSwitchToArbitrumSepolia}
+              className="flex items-center justify-center gap-3 px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-xl hover:scale-105 active:scale-95"
+            >
+              <Sparkles size={20} /> Switch to Arbitrum Sepolia
+            </button>
+          </div>
         ) : (
           <div className="flex flex-col gap-4 w-full max-w-xs">
             {connectors.map((conn) => (
@@ -316,35 +361,56 @@ const Dashboard = () => {
   return (
     <div ref={contentRef} className="bg-white font-sans text-black w-full min-h-screen pb-20">
 
-      {/* Hero */}
-      <section className="min-h-[50vh] flex flex-col items-center justify-center relative px-6 w-full pt-10">
-        <div className="text-center max-w-4xl mx-auto">
-          <div className="hero-element mb-6 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-1.5 text-sm font-semibold">
-            <span className="flex h-2 w-2 rounded-full bg-black"></span>
-            <span>Connected: {displayName}</span>
-          </div>
-          <h1 className="hero-element text-5xl md:text-7xl font-extrabold tracking-tight text-black mb-6">CredLayer AI</h1>
-          <p className="hero-element text-xl md:text-2xl text-gray-500 font-medium leading-relaxed mb-8">
-            Transforming everyday activity into verifiable reputation.
-          </p>
-          <div className="hero-element flex flex-wrap justify-center gap-2 mt-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium text-sm ${activeTab === tab.id ? 'bg-black text-white shadow-lg' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-black'
-                  }`}
-              >
-                {tab.icon} {tab.name}
-              </button>
-            ))}
-          </div>
-          <div className="hero-element mt-16 text-sm text-gray-400 flex flex-col items-center animate-bounce">
-            <p className="mb-2">Explore your finance</p>
-            <div className="h-10 w-[1px] bg-gray-300"></div>
-          </div>
-        </div>
-      </section>
+<section className="min-h-[70vh] flex items-center px-6 md:px-16 w-full">
+  
+  {/* Columna izquierda — texto */}
+  <div className="flex-1 min-w-0">
+    <div className="hero-element mb-6 inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-1.5 text-sm font-semibold">
+      <span className="flex h-2 w-2 rounded-full bg-black"></span>
+      <span>Connected: {displayName}</span>
+    </div>
+
+    <h1 className="hero-element text-5xl md:text-7xl font-extrabold tracking-tight text-black mb-6">
+      CredLayer AI
+    </h1>
+
+    <p className="hero-element text-xl md:text-2xl text-gray-500 font-medium leading-relaxed mb-8">
+      Transforming everyday activity into verifiable reputation.
+    </p>
+
+    <div className="hero-element flex flex-wrap gap-2">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => setActiveTab(tab.id)}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium text-sm ${
+            activeTab === tab.id
+              ? 'bg-black text-white shadow-lg'
+              : 'bg-gray-50 text-gray-600 hover:bg-gray-100 hover:text-black'
+          }`}
+        >
+          {tab.icon} {tab.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {/* Columna derecha — loader 3D */}
+  <div className="hidden md:flex flex-shrink-0 items-center justify-center w-[280px]">
+    <div className="loader">
+      <div className="ground"><div></div></div>
+      <div className="box box0"><div></div></div>
+      <div className="box box1"><div></div></div>
+      <div className="box box2"><div></div></div>
+      <div className="box box3"><div></div></div>
+      <div className="box box4"><div></div></div>
+      <div className="box box5"><div></div></div>
+      <div className="box box6"><div></div></div>
+      <div className="box box7"><div></div></div>
+    </div>
+  </div>
+
+</section>
 
       {/* OVERVIEW */}
       {activeTab === 'overview' && (
@@ -726,14 +792,25 @@ const Dashboard = () => {
                                         <span className="text-zinc-500 font-bold uppercase tracking-wider block mb-1">Verification Hash:</span>
                                         <span className="text-zinc-400 text-[11px] font-mono break-all">{tx.hash}</span>
                                       </div>
-                                      <a
-                                        href={`https://sepolia.etherscan.io/tx/${tx.hash}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-lg transition-colors text-xs font-sans mt-1"
-                                      >
-                                        Verify on Etherscan <ExternalLink size={12} />
-                                      </a>
+                                      {tx.amount?.includes('MXNB') ? (
+                                        <a
+                                          href={`https://sepolia.arbiscan.io/tx/${tx.hash}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-lg transition-colors text-xs font-sans mt-1"
+                                        >
+                                          Verify on Arbiscan <ExternalLink size={12} />
+                                        </a>
+                                      ) : (
+                                        <a
+                                          href={`https://sepolia.etherscan.io/tx/${tx.hash}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-lg transition-colors text-xs font-sans mt-1"
+                                        >
+                                          Verify on Etherscan <ExternalLink size={12} />
+                                        </a>
+                                      )}
                                     </div>
                                   </div>
                                 </td>

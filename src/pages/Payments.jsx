@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { useNavigate } from 'react-router-dom'
 import { Buffer } from 'buffer'
 window.Buffer = window.Buffer || Buffer
-import { useNetwork } from 'wagmi'
+import { useNetwork, useSwitchNetwork } from 'wagmi'
 import { toast } from 'react-hot-toast'
 import { useWalletConnection } from '../hooks/useWalletConnection'
 import { usePaymentsData } from '../hooks/usePaymentsData'
@@ -12,10 +12,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useAiAssistantContext } from '../context/AiAssistantContext'
 import { ethers } from 'ethers'
+import { useTrustScore } from '../hooks/useCredLayer'
+import { SEPOLIA_CHAIN_ID, ARBITRUM_SEPOLIA_CHAIN_ID, ensureSepoliaNetwork, ensureArbitrumSepoliaNetwork, notifyTransactionsUpdated } from '../config/chains'
+import '../styles/payments.css'
 
 // ─── Contract ─────────────────────────────────────────────────────────────────
 const CREDLAYER_ADDRESS = '0xcABFB7d02e1C32F2a26FFa244F1B1ba53f920431'
 const USDC_SEPOLIA      = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'
+const MXNB_ADDRESS      = '0xf197ffc28c23e0309b5559e7a166f2c6164c80aa'
 
 const CREDLAYER_ABI = [
   'function registerPayment(address recipient, uint256 amount, string calldata proofHash) external returns (uint256 id)',
@@ -25,415 +29,16 @@ const CREDLAYER_ABI = [
 const ERC20_ABI = [
   'function approve(address spender, uint256 amount) external returns (bool)',
   'function allowance(address owner, address spender) external view returns (uint256)',
+  'function transfer(address to, uint256 amount) external returns (bool)',
+  'function decimals() external view returns (uint8)',
 ]
 
-const getExplorerUrl = (txHash) => `https://sepolia.etherscan.io/tx/${txHash}`
+const getExplorerUrl = (txHash, isMxnb = false) => 
+  isMxnb 
+    ? `https://sepolia.arbiscan.io/tx/${txHash}` 
+    : `https://sepolia.etherscan.io/tx/${txHash}`
 
 gsap.registerPlugin(ScrollTrigger)
-
-// ─── Styles ────────────────────────────────────────────────────────────────────
-const css = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-  .pay-page * { 
-    box-sizing: border-box; 
-    font-family: 'Inter', sans-serif; 
-    transition: background-color 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
-                border-color 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
-                box-shadow 0.2s cubic-bezier(0.23, 1, 0.32, 1), 
-                transform 0.15s cubic-bezier(0.23, 1, 0.32, 1);
-  }
-
-  .pay-page { 
-    background: #f8f9fa; 
-    color: #0a0a0a; 
-    min-height: 100vh; 
-    padding-bottom: 40px;
-  }
-
-  /* Header */
-  .pay-header {
-    background: #fff;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 24px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .pay-header__left h1 {
-    font-size: 1.75rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    margin: 0 0 4px;
-    line-height: 1.1;
-  }
-  .pay-header__left p {
-    font-size: 0.85rem;
-    color: #6b6b6b;
-    margin: 0;
-  }
-  .pay-wallet-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 100px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #3d3d3d;
-    background: #fff;
-  }
-  .pay-wallet-badge:active {
-    transform: scale(0.96);
-  }
-  .pay-wallet-badge .dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: #0a0a0a;
-    flex-shrink: 0;
-  }
-  .pay-wallet-badge.registered .dot { background: #16a34a; }
-
-  /* Stats bar */
-  .pay-stats-bar {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 32px 40px 12px;
-  }
-  .pay-stat {
-    padding: 24px;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    border-radius: 18px;
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.02), 0 1px 3px rgba(0, 0, 0, 0.01);
-  }
-  .pay-stat__label { 
-    font-size: 0.72rem; 
-    color: #888; 
-    font-weight: 600; 
-    margin-bottom: 8px; 
-    text-transform: uppercase; 
-    letter-spacing: 0.04em;
-  }
-  .pay-stat__value { 
-    font-size: 1.6rem; 
-    font-weight: 800; 
-    letter-spacing: -0.04em; 
-  }
-
-  /* Main grid */
-  .pay-main {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 24px;
-    padding: 20px 40px 32px;
-  }
-
-  /* Form panel */
-  .pay-form-panel {
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 24px;
-    padding: 36px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
-  }
-  .pay-form-panel h2 {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin: 0 0 28px;
-  }
-  .pay-field { margin-bottom: 22px; }
-  .pay-field label {
-    display: block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #3d3d3d;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .pay-input {
-    width: 100%;
-    padding: 13px 16px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 12px;
-    font-size: 0.88rem;
-    color: #0a0a0a;
-    background: #fff;
-    outline: none;
-    font-family: 'Inter', sans-serif;
-  }
-  .pay-input:focus { 
-    border-color: #0a0a0a; 
-    box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.05);
-  }
-  .pay-input::placeholder { color: #b0b0b0; }
-  .pay-input-mono { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.8rem; }
-
-  /* Token selector */
-  .pay-token-select {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .pay-token-btn {
-    flex: 1;
-    padding: 11px 12px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 12px;
-    background: #fff;
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: #6b6b6b;
-    text-align: center;
-  }
-  .pay-token-btn:hover { border-color: #0a0a0a; color: #0a0a0a; }
-  .pay-token-btn.active { background: #0a0a0a; border-color: #0a0a0a; color: #fff; }
-  .pay-token-btn.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
-  .pay-token-btn:active:not(.disabled) {
-    transform: scale(0.96);
-  }
-
-  /* Submit button */
-  .pay-submit {
-    width: 100%;
-    padding: 15px 20px;
-    background: #0a0a0a;
-    color: #fff;
-    border: none;
-    border-radius: 12px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 8px;
-    letter-spacing: -0.01em;
-  }
-  .pay-submit:hover:not(:disabled) { background: #222; }
-  .pay-submit:active:not(:disabled) { transform: scale(0.97); }
-  .pay-submit:disabled { opacity: 0.45; cursor: not-allowed; }
-
-  /* Secondary button */
-  .pay-secondary-btn {
-    margin-top: 24px;
-    width: 100%;
-    padding: 12px 20px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 12px;
-    background: transparent;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #3d3d3d;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-  .pay-secondary-btn:hover {
-    border-color: #0a0a0a;
-    color: #0a0a0a;
-    background: rgba(0, 0, 0, 0.02);
-  }
-  .pay-secondary-btn:active {
-    transform: scale(0.97);
-  }
-
-  /* Gas info */
-  .pay-gas-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin-top: 14px;
-    font-size: 0.72rem;
-    color: #888;
-  }
-  .pay-gas-dot { width: 5px; height: 5px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
-
-  /* TX success */
-  .pay-tx-success {
-    margin-top: 24px;
-    padding: 18px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 16px;
-    background: #fafafa;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
-  }
-  .pay-tx-success__label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #3d3d3d; margin-bottom: 6px; }
-  .pay-tx-success__hash { font-family: monospace; font-size: 0.72rem; color: #666; word-break: break-all; margin-bottom: 8px; }
-  .pay-tx-success__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: #0a0a0a;
-    text-decoration: none;
-  }
-  .pay-tx-success__link:hover { text-decoration: underline; }
-
-  /* Sidebar panel */
-  .pay-sidebar {
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 24px;
-    padding: 36px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
-    height: fit-content;
-  }
-
-  /* Trust Score */
-  .pay-score-block { margin-bottom: 36px; }
-  .pay-score-block__label {
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #888;
-    margin-bottom: 8px;
-  }
-  .pay-score-block__number {
-    font-size: 3.5rem;
-    font-weight: 900;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    margin-bottom: 12px;
-  }
-  .pay-score-bar-track {
-    height: 5px;
-    background: #e8e8e8;
-    border-radius: 100px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
-  .pay-score-bar-fill {
-    height: 100%;
-    background: #0a0a0a;
-    border-radius: 100px;
-    width: 0%;
-  }
-  .pay-score-block__sub { font-size: 0.72rem; color: #888; }
-
-  /* Stat rows */
-  .pay-stat-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 0.8rem;
-  }
-  .pay-stat-row:last-child { border-bottom: none; }
-  .pay-stat-row__label { color: #6b6b6b; }
-  .pay-stat-row__value { font-weight: 700; }
-
-  /* Contract block */
-  .pay-contract-block {
-    margin-top: 28px;
-    padding: 16px;
-    background: #0a0a0a;
-    border-radius: 16px;
-  }
-  .pay-contract-block__label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #666; margin-bottom: 6px; }
-  .pay-contract-block__addr { font-family: monospace; font-size: 0.68rem; color: #a0a0a0; word-break: break-all; margin-bottom: 10px; }
-  .pay-contract-block__link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: #fff;
-    text-decoration: none;
-    opacity: 0.7;
-  }
-  .pay-contract-block__link:hover { opacity: 1; }
-
-  /* History section */
-  .pay-history { 
-    margin: 0 40px 40px; 
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    border-radius: 24px;
-    padding: 36px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
-  }
-  .pay-history__hdr {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .pay-history__title { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; }
-  .pay-history__sync { font-size: 0.72rem; color: #999; }
-
-  /* Table */
-  .pay-table { width: 100%; border-collapse: collapse; }
-  .pay-table th {
-    text-align: left;
-    font-size: 0.68rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #888;
-    padding: 0 12px 12px;
-    border-bottom: 1px solid #e8e8e8;
-  }
-  .pay-table td {
-    padding: 16px 12px;
-    font-size: 0.82rem;
-    border-bottom: 1px solid #f0f0f0;
-    vertical-align: middle;
-  }
-  .pay-table tr:last-child td { border-bottom: none; }
-  .pay-table tr:hover td { background: #fafafa; }
-
-  .pay-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    border: 1px solid;
-  }
-  .pay-badge--confirmed { border-color: rgba(0, 0, 0, 0.12); color: #0a0a0a; background: transparent; }
-  .pay-badge--pending   { border-color: rgba(0, 0, 0, 0.06); color: #999; background: transparent; }
-
-  .pay-empty {
-    padding: 64px 40px;
-    text-align: center;
-    color: #b0b0b0;
-    font-size: 0.88rem;
-  }
-
-  /* Spinning loader */
-  @keyframes pay-spin { to { transform: rotate(360deg); } }
-  .pay-spinning { animation: pay-spin 0.8s linear infinite; }
-
-  @media (max-width: 768px) {
-    .pay-stats-bar { grid-template-columns: 1fr; gap: 12px; padding: 20px 20px 0; }
-    .pay-stat { padding: 18px; }
-    .pay-main { grid-template-columns: 1fr; gap: 20px; padding: 16px 20px; }
-    .pay-form-panel { padding: 24px; }
-    .pay-sidebar { padding: 24px; }
-    .pay-header { padding: 20px; }
-    .pay-history { margin: 0 20px 20px; padding: 24px; }
-    .pay-table th, .pay-table td { padding: 12px 6px; }
-  }
-`
 
 const TOKENS = [
   { symbol: 'USDC', network: 'Ethereum Sepolia' },
@@ -444,8 +49,10 @@ const TOKENS = [
 // ─── Component ─────────────────────────────────────────────────────────────────
 const Payments = () => {
   const navigate = useNavigate()
-  const { userProfile, address, reputationScore, updateScore } = useWalletConnection()
+  const { userProfile, address, updateScore, reputationScore } = useWalletConnection()
   const { chain } = useNetwork()
+  const { switchNetwork } = useSwitchNetwork()
+  const { score: onChainScore } = useTrustScore()
   const { data: paymentsData, isLoading: isPaymentsLoading } = usePaymentsData(address)
   const { setPageIntent, updatePageContext } = useAiAssistantContext()
 
@@ -455,10 +62,48 @@ const Payments = () => {
   const [lastTxHash, setLastTxHash]     = useState('')
   const [selectedToken, setSelectedToken] = useState('USDC')
 
+  const [transactionData, setTransactionData] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+      if (saved.length > 0) return saved
+    } catch (_) { }
+    return [
+      { id: 1, type: 'Income', amount: '+500 USDC', from: 'Cliente 0x70Dd...f09c', date: 'Jun 1, 10:30 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 2, type: 'Income', amount: '+0.02 USDC', from: 'Cliente 0x70Dd...f09c', date: 'May 28, 3:52 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 3, type: 'Expense', amount: '-150 USDC', from: 'Proveedor 0x9B4a...', date: 'May 27, 2:15 PM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+      { id: 4, type: 'Income', amount: '+1200 USDC', from: 'Cliente 0x1F2d...', date: 'May 26, 9:00 AM', status: 'Verified', hash: '0xa9c70c51c483bedf4a9c4fcfa98b232034f334af9609c08bfe6e360b8f332010' },
+    ]
+  })
+
+  const loadTransactionsFromStorage = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+      if (saved.length > 0) setTransactionData(saved)
+    } catch (_) { }
+  }
+
+  useEffect(() => {
+    loadTransactionsFromStorage()
+  }, [])
+
+  useEffect(() => {
+    const onTxUpdate = () => loadTransactionsFromStorage()
+    window.addEventListener('creedlayer-txs-updated', onTxUpdate)
+    window.addEventListener('storage', onTxUpdate)
+    return () => {
+      window.removeEventListener('creedlayer-txs-updated', onTxUpdate)
+      window.removeEventListener('storage', onTxUpdate)
+    }
+  }, [])
+
   const pageRef      = useRef(null)
   const scoreBarRef  = useRef(null)
   const scoreNumRef  = useRef(null)
-  const networkName  = chain?.name || 'Sepolia'
+  const networkName = chain?.id === SEPOLIA_CHAIN_ID
+    ? 'Sepolia'
+    : chain?.id === 421614
+      ? 'Arbitrum Sepolia'
+      : chain?.name || 'Unknown'
 
   const shortAddress = useMemo(
     () => (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '—'),
@@ -468,7 +113,7 @@ const Payments = () => {
   const paymentsMetrics = paymentsData?.metrics
   const history         = paymentsData?.history
   const recentPayments  = useMemo(() => history ?? [], [history])
-  const score           = reputationScore ?? 0
+  const score           = onChainScore > 0 ? onChainScore : (reputationScore ?? 0)
   const scoreMax        = 1000
   const scorePct        = Math.min(100, (score / scoreMax) * 100)
 
@@ -558,41 +203,100 @@ const Payments = () => {
     return () => { if (lenis) lenis.destroy(); if (ctx) ctx.revert() }
   }, [scorePct])
 
-  // ─── Contracts ────────────────────────────────────────────────────────────
-  const getContracts = useCallback(async () => {
-    if (!window?.ethereum) throw new Error('Wallet not detected')
-    const provider = new ethers.BrowserProvider(window.ethereum)
-    const signer   = await provider.getSigner()
-    const credlayer = new ethers.Contract(CREDLAYER_ADDRESS, CREDLAYER_ABI, signer)
-    const usdc      = new ethers.Contract(USDC_SEPOLIA,      ERC20_ABI,     signer)
-    return { signer, credlayer, usdc }
-  }, [])
-
   // ─── handleSendPayment ────────────────────────────────────────────────────
   const handleSendPayment = async (e) => {
     e.preventDefault()
-    if (!userProfile?.isRegistered) {
-      toast.error('Register in CredLayer AI first')
-      return
-    }
+
     const amountFloat = parseFloat(paymentForm.amount)
     if (!Number.isFinite(amountFloat) || amountFloat <= 0) {
       toast.error('Enter a valid amount')
       return
     }
+    if (!paymentForm.to || !/^0x[0-9a-fA-F]{40}$/.test(paymentForm.to)) {
+      toast.error('Enter a valid recipient address (0x...)')
+      return
+    }
+
     try {
       setIsProcessing(true)
       setLastTxHash('')
-      const { credlayer, usdc } = await getContracts()
-      const decimals  = selectedToken === 'ETH' ? 18 : 6
-      const amountWei = ethers.parseUnits(String(amountFloat), decimals)
-      const raw       = `${paymentForm.to}-${amountFloat}-${paymentForm.memo}-${Date.now()}`
-      const proofHash = ethers.keccak256(ethers.toUtf8Bytes(raw))
+
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const network  = await provider.getNetwork()
+      const isMxnb   = selectedToken === 'MXNB'
+      const targetChainId   = isMxnb ? ARBITRUM_SEPOLIA_CHAIN_ID : SEPOLIA_CHAIN_ID
+      const targetChainName = isMxnb ? 'Arbitrum Sepolia' : 'Sepolia'
+
+      // ── Switch network if needed ──────────────────────────────────────────
+      if (Number(network.chainId) !== targetChainId) {
+        setProcessingStep(`Switching to ${targetChainName}...`)
+        if (isMxnb) {
+          await ensureArbitrumSepoliaNetwork(switchNetwork)
+        } else {
+          await ensureSepoliaNetwork(switchNetwork)
+        }
+        await new Promise(r => setTimeout(r, 1500))
+      }
+
+      const signer = await provider.getSigner()
+
+      // ── MXNB on Arbitrum Sepolia → direct ERC20 transfer ─────────────────
+      // CredLayer contract only exists on Ethereum Sepolia, so MXNB payments
+      // are executed as a plain ERC20 transfer to the recipient.
+      if (isMxnb) {
+        const mxnbContract = new ethers.Contract(MXNB_ADDRESS, ERC20_ABI, signer)
+
+        // MXNB uses 6 decimals (same as USDC)
+        let decimals = 6
+        try { decimals = Number(await mxnbContract.decimals()) } catch (_) { }
+
+        const amountWei = ethers.parseUnits(String(amountFloat), decimals)
+        setProcessingStep('Sending MXNB...')
+        const tx = await mxnbContract.transfer(paymentForm.to, amountWei)
+        await tx.wait()
+
+        setLastTxHash(tx.hash)
+        const newTx = {
+          id: Date.now(),
+          type: 'Income',
+          amount: `+${paymentForm.amount} MXNB`,
+          from: `${paymentForm.to.slice(0, 6)}...${paymentForm.to.slice(-4)}`,
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+          status: 'Verified',
+          hash: tx.hash,
+        }
+        const existing = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+        localStorage.setItem('creedlayer_txs', JSON.stringify([newTx, ...existing].slice(0, 10)))
+        notifyTransactionsUpdated()
+        updateScore(12)
+
+        toast.success(
+          <div style={{ fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>MXNB transferred on-chain ✓</div>
+            <div style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5 }}>{tx.hash.slice(0, 24)}…</div>
+            <a href={getExplorerUrl(tx.hash, true)} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, fontWeight: 600, color: '#0a0a0a', textDecoration: 'underline', display: 'block', marginTop: 4 }}>
+              View on Arbiscan →
+            </a>
+          </div>,
+          { duration: 8000 }
+        )
+        setPaymentForm({ to: '', amount: '', memo: '' })
+        return
+      }
+
+      // ── USDC on Sepolia → approve + registerPayment via CredLayer ─────────
+      const credlayer    = new ethers.Contract(CREDLAYER_ADDRESS, CREDLAYER_ABI, signer)
+      const tokenContract = new ethers.Contract(USDC_SEPOLIA, ERC20_ABI, signer)
+      const decimals     = 6
+      const amountWei    = ethers.parseUnits(String(amountFloat), decimals)
+      const raw          = `${paymentForm.to}-${amountFloat}-${paymentForm.memo}-${Date.now()}`
+      const proofHash    = ethers.keccak256(ethers.toUtf8Bytes(raw))
 
       setProcessingStep('Approving USDC...')
-      const allowance = await usdc.allowance(address, CREDLAYER_ADDRESS)
+      const allowance = await tokenContract.allowance(address, CREDLAYER_ADDRESS)
       if (allowance < amountWei) {
-        const txApprove = await usdc.approve(CREDLAYER_ADDRESS, amountWei)
+        const txApprove = await tokenContract.approve(CREDLAYER_ADDRESS, amountWei)
         await txApprove.wait()
         toast.success('USDC approved')
       }
@@ -603,21 +307,24 @@ const Payments = () => {
 
       setLastTxHash(tx.hash)
       const newTx = {
-        id: Date.now(), type: 'Income',
-        amount: `+${paymentForm.amount} ${selectedToken}`,
+        id: Date.now(),
+        type: 'Income',
+        amount: `+${paymentForm.amount} USDC`,
         from: `${paymentForm.to.slice(0, 6)}...${paymentForm.to.slice(-4)}`,
-        date: new Date().toLocaleString('en-US', { dateStyle: 'short' }),
-        status: 'Verified', hash: tx.hash,
+        date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+        status: 'Verified',
+        hash: tx.hash,
       }
       const existing = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
       localStorage.setItem('creedlayer_txs', JSON.stringify([newTx, ...existing].slice(0, 10)))
+      notifyTransactionsUpdated()
       updateScore(12)
 
       toast.success(
         <div style={{ fontFamily: 'Inter, sans-serif' }}>
-          <div style={{ fontWeight: 700, marginBottom: 4 }}>Payment verified on-chain ✓</div>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>Payment registered on-chain ✓</div>
           <div style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5 }}>{tx.hash.slice(0, 24)}…</div>
-          <a href={getExplorerUrl(tx.hash)} target="_blank" rel="noopener noreferrer"
+          <a href={getExplorerUrl(tx.hash, false)} target="_blank" rel="noopener noreferrer"
             style={{ fontSize: 11, fontWeight: 600, color: '#0a0a0a', textDecoration: 'underline', display: 'block', marginTop: 4 }}>
             View on Etherscan →
           </a>
@@ -636,7 +343,6 @@ const Payments = () => {
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="pay-page" ref={pageRef}>
-      <style>{css}</style>
 
       {/* ── Header ── */}
       <header className="pay-header pay-fade-in">
@@ -741,7 +447,7 @@ const Payments = () => {
             </div>
 
             {/* Submit */}
-            <button className="pay-submit" type="submit" disabled={isProcessing || !userProfile?.isRegistered}>
+            <button className="pay-submit" type="submit" disabled={isProcessing || !address}>
               {isProcessing ? (
                 <>
                   <Clock size={16} className="pay-spinning" />
@@ -845,7 +551,7 @@ const Payments = () => {
 
         {isPaymentsLoading ? (
           <div className="pay-empty">Syncing history...</div>
-        ) : recentPayments.length > 0 ? (
+        ) : transactionData.length > 0 ? (
           <table className="pay-table">
             <thead>
               <tr>
@@ -858,39 +564,48 @@ const Payments = () => {
               </tr>
             </thead>
             <tbody>
-              {recentPayments.map((p) => (
-                <tr key={p.id}>
-                  <td style={{ color: '#6b6b6b' }}>{formatDate(p.timestamp || p.date)}</td>
-                  <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
-                    {p.to ? `${p.to.slice(0, 8)}...${p.to.slice(-4)}` : '—'}
-                  </td>
-                  <td style={{ fontWeight: 700 }}>${p.amount}</td>
-                  <td style={{ color: '#6b6b6b' }}>USDC</td>
-                  <td>
-                    <span className={`pay-badge ${p.status === 'completed' ? 'pay-badge--confirmed' : 'pay-badge--pending'}`}>
-                      {p.status === 'completed' ? (
-                        <><CheckCircle size={9} /> Confirmed</>
-                      ) : (
-                        <><Clock size={9} /> Pending</>
-                      )}
-                    </span>
-                  </td>
-                  <td>
-                    {p.txHash ? (
-                      <a
-                        href={getExplorerUrl(p.txHash)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: '#0a0a0a', textDecoration: 'none', fontWeight: 600 }}
-                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                      >
-                        {p.txHash.slice(0, 8)}… <ArrowUpRight size={10} />
-                      </a>
-                    ) : '—'}
-                  </td>
-                </tr>
-              ))}
+              {transactionData.map((p) => {
+                const cleanAmount = p.amount.replace('+', '').replace('-', '').trim()
+                const amountParts = cleanAmount.split(' ')
+                const displayAmt = amountParts[0] || '0'
+                const displayTok = amountParts[1] || 'USDC'
+                const isMxnb = displayTok === 'MXNB'
+                const txHash = p.hash || p.txHash
+
+                return (
+                  <tr key={p.id}>
+                    <td style={{ color: '#6b6b6b' }}>{p.date}</td>
+                    <td style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>
+                      {p.from || '—'}
+                    </td>
+                    <td style={{ fontWeight: 700 }}>${displayAmt}</td>
+                    <td style={{ color: '#6b6b6b' }}>{displayTok}</td>
+                    <td>
+                      <span className={`pay-badge ${p.status === 'Verified' || p.status === 'completed' ? 'pay-badge--confirmed' : 'pay-badge--pending'}`}>
+                        {p.status === 'Verified' || p.status === 'completed' ? (
+                          <><CheckCircle size={9} /> Confirmed</>
+                        ) : (
+                          <><Clock size={9} /> Pending</>
+                        )}
+                      </span>
+                    </td>
+                    <td>
+                      {txHash ? (
+                        <a
+                          href={getExplorerUrl(txHash, isMxnb)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: '#0a0a0a', textDecoration: 'none', fontWeight: 600 }}
+                          onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                          onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                        >
+                          {txHash.slice(0, 8)}… <ArrowUpRight size={10} />
+                        </a>
+                      ) : '—'}
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         ) : (

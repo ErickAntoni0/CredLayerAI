@@ -2,6 +2,7 @@
 // CredLayer AI — Módulo de Microcréditos y Reputación Web3 con NFTs Dinámicos
 
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { useSwitchNetwork } from 'wagmi'
 import { useWalletConnection } from '../hooks/useWalletConnection'
 import { useLoansData } from '../hooks/useLoansData'
 import {
@@ -18,7 +19,8 @@ import {
   AlertCircle,
   HelpCircle,
   TrendingUp,
-  Percent
+  Percent,
+  LayoutDashboard
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { ethers } from 'ethers'
@@ -26,7 +28,12 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import latamImg from '../assets/latam1.jpg'
 import handsImg from '../assets/imageHands.webp'
+import { ARBITRUM_SEPOLIA_RPC, ensureArbitrumSepoliaNetwork } from '../config/chains'
+import { useNavigate } from 'react-router-dom';
 import '../styles/loans.css'
+
+const MXNB_ADDRESS = '0xf197ffc28c23e0309b5559e7a166f2c6164c80aa'
+const MXNB_REPAY_POOL = '0x000000000000000000000000000000000000dEaD'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -41,6 +48,7 @@ const SPONSORS = [
 
 const Loans = () => {
   const { address, reputationScore } = useWalletConnection()
+  const { switchNetwork } = useSwitchNetwork()
   const { data: initialLoansData, isLoading: isLoadingLoans } = useLoansData(address)
   const tickerRef = useRef(null)
 
@@ -54,7 +62,7 @@ const Loans = () => {
     }
     const fetchMxnb = async () => {
       try {
-        const provider = new ethers.JsonRpcProvider('https://sepolia-rollup.arbitrum.io/rpc')
+        const provider = new ethers.JsonRpcProvider(ARBITRUM_SEPOLIA_RPC)
         const abi = ["function balanceOf(address owner) view returns (uint256)"]
         const contract = new ethers.Contract('0xf197ffc28c23e0309b5559e7a166f2c6164c80aa', abi, provider)
         const bal = await contract.balanceOf(address)
@@ -330,40 +338,42 @@ const Loans = () => {
 
   // Pagar Préstamo (Repay)
   const handleRepay = async (loanId, amount) => {
-    if (amount.includes('MXNB')) {
-      if (window.ethereum) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x66eee' }], // Arbitrum Sepolia
-          });
-        } catch (switchError) {
-          if (switchError.code === 4902) {
-            try {
-              await window.ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [
-                  {
-                    chainId: '0x66eee',
-                    chainName: 'Arbitrum Sepolia Testnet',
-                    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-                    rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-                    blockExplorerUrls: ['https://sepolia.arbiscan.io/']
-                  }
-                ]
-              });
-            } catch (addError) {
-              toast.error("Failed to add Arbitrum Sepolia network.");
-              return;
-            }
-          } else {
-            toast.error("Failed to switch network: " + switchError.message);
-            return;
-          }
-        }
-      } else {
-        toast.error("Wallet not detected. Please install a Web3 wallet.");
-        return;
+    const isMxnb = amount.includes('MXNB')
+
+    if (isMxnb) {
+      let switchToast
+      try {
+        switchToast = toast.loading('Switching to Arbitrum Sepolia...')
+        await ensureArbitrumSepoliaNetwork(switchNetwork)
+        toast.dismiss(switchToast)
+
+        const provider = new ethers.BrowserProvider(window.ethereum)
+        const signer = await provider.getSigner()
+        const mxnb = new ethers.Contract(
+          MXNB_ADDRESS,
+          ['function transfer(address to, uint256 amount) returns (bool)'],
+          signer
+        )
+        const amountStr = amount.replace(' MXNB', '').trim()
+        const amountWei = ethers.parseUnits(amountStr, 6)
+
+        const txToast = toast.loading('Confirm MXNB payment in MetaMask...')
+        const tx = await mxnb.transfer(MXNB_REPAY_POOL, amountWei)
+        await tx.wait()
+        toast.dismiss(txToast)
+        toast.success(
+          <span>
+            MXNB payment confirmed!{' '}
+            <a href={`https://sepolia.arbiscan.io/tx/${tx.hash}`} target="_blank" rel="noopener noreferrer">
+              View on Arbiscan
+            </a>
+          </span>,
+          { duration: 8000 }
+        )
+      } catch (err) {
+        if (switchToast) toast.dismiss(switchToast)
+        toast.error('MXNB payment failed: ' + err.message)
+        return
       }
     }
 

@@ -126,7 +126,29 @@ export const useAiAssistant = (defaultIntent = 'general') => {
     }
 
     try {
-      // Siempre usa Gemini — no hay modo mock
+      const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
+      const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || !geminiKey || geminiKey.startsWith('YOUR_')
+
+      if (isDemoMode) {
+        if (!geminiKey || geminiKey.startsWith('YOUR_')) {
+          console.warn("API key placeholder detected. Running in local simulation mode. Set a valid VITE_GEMINI_API_KEY in your .env file to use the real Gemini API.")
+        }
+        
+        // Simulación local
+        const contractData = await fetchContractData(userState?.address)
+        const mockReply = buildMockReply(trimmedMessage, { ...userState, ...contractData }, intent, payload)
+        
+        const aiResponse = {
+          message: mockReply.message,
+          highlights: mockReply.highlights,
+          actions: mockReply.actions,
+          contractData
+        }
+        
+        setLastResponse(aiResponse)
+        setMessages(prev => [...prev, { role: 'ai', content: aiResponse }])
+        return aiResponse
+      }
 
       // ── MODO REAL: llamada directa a Google Gemini ──────────────────────────
       // 1. Leer datos reales del contrato
@@ -155,7 +177,6 @@ export const useAiAssistant = (defaultIntent = 'general') => {
         : [{ role: 'user', parts: [{ text: trimmedMessage || 'Hola' }] }]
 
       // 4. Llamar a la API de Gemini
-      const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`
 
       const response = await fetch(geminiUrl, {
@@ -183,11 +204,22 @@ export const useAiAssistant = (defaultIntent = 'general') => {
 
     } catch (err) {
       setError(err.message)
+      
+      let contractData = {}
+      try {
+        contractData = await fetchContractData(userState?.address)
+      } catch (_) {}
+
+      const mockReply = buildMockReply(trimmedMessage, { ...userState, ...contractData }, intent, payload)
       const fallback = {
-        message: 'No pude conectarme en este momento.  Respondiendo en modo simulación local. Tu API key puede estar expirada.',
+        message: `No pude conectarme en este momento. Respondiendo en modo simulación local.\n\n${mockReply.message}`,
+        highlights: mockReply.highlights,
+        actions: mockReply.actions,
+        contractData
       }
+      setLastResponse(fallback)
       setMessages(prev => [...prev, { role: 'ai', content: fallback }])
-      return null
+      return fallback
     } finally {
       setIsLoading(false)
     }
@@ -205,7 +237,7 @@ export const useAiAssistant = (defaultIntent = 'general') => {
 // ─── Mock inteligente (cuando no hay API key) ──────────────────────────────────
 // Responde con datos reales del userState pero sin llamada externa.
 // Perfecto para demos en vivo donde no quieres depender de internet.
-function buildMockReply(message = '', userState = {}) {
+function buildMockReply(message = '', userState = {}, intent = 'general', payload = {}) {
   const score = userState?.reputationScore ?? userState?.trustScore ?? 0
   const payments = userState?.totalPayments ?? 0
   const mxnbBalance = userState?.mxnbBalance ?? '12,450.00'
@@ -214,6 +246,29 @@ function buildMockReply(message = '', userState = {}) {
   const scoreValue = score > 0 ? score : (userState?.address ? 320 : 0);
   const isEligible = scoreValue >= 60;
   const maxCredit = scoreValue >= 800 ? '5,000 USDC' : scoreValue >= 400 ? '2,500 USDC' : '500 USDC';
+
+  // Si el intent es swap-advice o incluye swap, damos respuestas y highlights específicos
+  if (intent === 'swap-advice' || msg.includes('swap')) {
+    const amount = payload?.amount || '0'
+    const tokenIn = payload?.tokenIn || 'USDC'
+    const tokenOut = payload?.tokenOut || 'MXNB'
+    const slippage = payload?.slippage || '0.5'
+    return {
+      message: `Análisis de Swap: Intercambio de **${amount} ${tokenIn}** a **${tokenOut}** en Arbitrum Sepolia. La ruta directa de CreedLayer pools ofrece la mejor tasa de cambio con un deslizamiento (slippage) estimado de **${slippage}%**.`,
+      highlights: [
+        {
+          title: 'Ruta Óptima',
+          description: `Directamente mediante CreedLayer Pool (${tokenIn} → ${tokenOut}). impact < 0.02%`,
+          tag: 'Ruta'
+        },
+        {
+          title: 'Ahorro en Gas',
+          description: `Arbitrum Sepolia reduce tarifas de gas a < $0.001 USD por transacción.`,
+          tag: 'Gas'
+        }
+      ]
+    }
+  }
 
   if (msg.includes('score') || msg.includes('reputac') || msg.includes('trust')) {
     return {

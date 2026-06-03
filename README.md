@@ -11,9 +11,7 @@ CredLayer AI is a financial intelligence and portable reputation platform design
 
 The platform transforms everyday financial activity into a verifiable and portable financial reputation using Ethereum infrastructure, stablecoins, and AI-powered analytics.
 
-Instead of replacing banks, CredLayer AI creates an alternative trust layer for people traditionally ignored by the financial system.
-
-The experience is designed to feel like a modern fintech platform while Ethereum works invisibly in the background.
+Instead of replacing banks, CredLayer AI creates an alternative trust layer for people traditionally ignored by the financial system. The user experience is designed to feel like a modern fintech platform while Web3 and AI infrastructure work seamlessly in the background.
 
 ---
 
@@ -28,32 +26,39 @@ The goal is to help millions of people and small businesses in LATAM prove finan
 # Platform Summary & Features
 
 ### 1. Verifiable Payment Records
-Users can:
-* Register incoming and outgoing payments.
-* Store verification hashes on-chain.
-* Create immutable financial history.
-* Verify transactions transparently.
-* Supported assets: **USDC** (Ethereum Sepolia) and **MXNB** (Arbitrum Sepolia).
+* **Invoice Registry**: Users can register incoming and outgoing business payments.
+* **On-Chain Attestations**: Transaction verification hashes are committed on-chain.
+* **Interactive Log**: A detailed history table displays gas usage, block height, transaction confirmations, and direct verification links to Etherscan.
+* **Supported Assets**: **USDC** (Ethereum Sepolia) and **MXNB** (Mexican Peso stablecoin on Arbitrum Sepolia).
 
-### 2. NOVA AI Assistant
-An integrated financial intelligence assistant that:
-* Reads real-time data directly from the **CredLayer Core** contract (Trust Scores, payment count) and Arbitrum tokens (MXNB balances).
-* Provides tailored business and credit advice based on actual on-chain activity.
-* Uses direct integration with **Google Gemini API (`gemini-2.5-flash`)** for cost-efficient, high-performance, real-time responses.
-* Supports clean markdown parsing (`**negritas**`, `*cursivas*`) on all interfaces.
-* Integrated into the main React UI via the `/nova` standalone route and the persistent `<AIAssistantChat />` widget, using the custom `useAiAssistant` React hook. (Static file backup kept at `/IA/index.html`).
+### 2. Upgraded NOVA AI Assistant (100% Operational)
+An intelligent financial copilot integrated as a standalone page (`/nova`) and a persistent slide-over chat widget (`<AIAssistantChat />`).
+* **Hybrid Execution Engine**:
+  * **Live Mode**: Directly connects to the **Google Gemini API (`gemini-2.5-flash`)** for cost-efficient, high-performance, real-time responses.
+  * **Local Simulation Mode**: Automatically detects missing or placeholder keys (like `YOUR_GEMINI_API_KEY`) or `VITE_DEMO_MODE=true` in `.env` to execute a local mock solver (`buildMockReply`). This queries actual smart contract data and Arbitrum token balances to generate accurate financial answers.
+  * **Fail-Safe Fallback**: If a live request fails (expired key, network down), it catches the exception, updates the dashboard error warning, and immediately generates a mock reply, ensuring the assistant is **never broken** during live demo presentations.
+* **Context-Aware Insights**: Dynamically reads real-time data directly from the **CredLayer Core** contract (Trust Scores, payment counts) and Arbitrum MXNB tokens.
+* **Rich Markdown Parsing**: Fully supports formatting (bold, italic, list items, highlights) in chat bubbles.
 
-### 3. Reputation Layer & Trust Score
-Generates an alternative score independent of traditional banks:
-* Transaction frequency and payment consistency.
-* Revenue continuity and stability.
-* Evaluates credit eligibility and suggests limits (e.g. up to **5,000 USDC** for top scores).
+### 3. Web3 Microloans & Dynamic NFTs
+* **Community Funding (Lending)**: P2P lending system where users can fund active community credit requests using USDC and receive a dynamic "Backer NFT Certificate" in return.
+* **Credit Requests (Borrowing)**: Configure custom terms (principal, rate, term, purpose) to mint a representative **Reputation-Credit NFT**.
+* **Interactive 3D Preview**: Displays a beautiful Credit Card NFT with a 3D mouse-tilt parallax and glare visual effect.
+* **Repayment & Network Switching**: Repay loans in USDC or MXNB. If paying in MXNB, the app automatically prompts MetaMask to switch to the **Arbitrum Sepolia** network. On-time repayments automatically boost on-chain reputation scores.
+* **Live Support Ticker**: A scrolling horizontal banner showcasing real-time community sponsorships.
 
-### 4. Verifiable PDF Reports
-Allows exporting professional reports with:
-* Current on-chain Trust Score.
-* Links to the **CredLayer Core** contract on Etherscan for third-party validation.
-* Summary of verified operational activity.
+### 4. Interactive Community Portal
+* **Kinetic Background Canvas**: A premium floating particle grid background animating in response to mouse movement.
+* **Animated Statistics**: Stats counters (Active Members, Funded Volume, Active Nodes, Gas Saved) dynamically count up when scrolled into view.
+* **Interactive Onboarding Pipeline**: A multi-step setup flow guides users through connecting wallets, registering a custom ENS subdomain (`*.micro.eth`), choosing interest tags, and completing registration.
+* **Trending Discussions Board**: A forum-style list displaying community ideas, reputation of authors, and replies.
+* **Bento Grid layout**: Showcases featured community cooperatives (CulturaChain Collective, Cooperativa Milpa Alta, ENS Reputation Layer).
+
+### 5. Verifiable PDF Reports
+Allows exporting professional financial reports with:
+* Current on-chain Trust Score and verified payment volume.
+* Verified contract deployment address on Ethereum Sepolia.
+* Direct link to the **CredLayer Core** contract on Etherscan for third-party validation.
 
 ---
 
@@ -68,29 +73,6 @@ CredLayer AI is fully operational on testnets. All reputation data and payments 
 
 ---
 
-# 🎬 Demo Script (60-Second Flow)
-
-To showcase the live product, follow this recommended sequence:
-1. **Connect Wallet:** The user connects their MetaMask wallet on Arbitrum & Sepolia. Their Trust Score appears in real-time on the Dashboard.
-2. **Register Payment:** Go to "Payments", register a new incoming payment in USDC or MXNB. A transaction hash is written on-chain.
-3. **NOVA Assistant Consultation:** Open NOVA. NOVA reads the new payment count/updated score instantly and recommends a microcredit eligibility limit.
-4. **Export Reputation Certificate:** Generate and download a PDF report containing the verified score, address details, and on-chain hash references.
-
----
-
-# 🏆 Sponsor Track Alignment
-
-### 1. Bitso / MXNB Track
-* **MXNB Integration:** CredLayer AI fully integrates the **MXNB** (Mexican Peso on-chain) token on Arbitrum Sepolia.
-* **LATAM Market Fit:** MXNB is used as the primary settlement currency for microcredits and P2P business invoice payments, lowering friction and avoiding currency conversion loss for Mexican merchants.
-* **Low-Cost Transactions:** Leveraging Arbitrum's speed keeps gas fees below $0.01 USD per invoice payment.
-
-### 2. Arbitrum Track
-* **Highly Scalable Microcredits:** Deploying microcredit infrastructure on Arbitrum Sepolia allows instant settlements, ultra-cheap transactions, and high throughput.
-* **On-Chain Identity:** Trust score calculations compile Arbitrum-based token transfers to dynamically update Web3 credit reputation.
-
----
-
 # 🏗️ Technical Architecture
 
 ```mermaid
@@ -100,7 +82,7 @@ graph TD
     WalletStore -->|Fetches Live Data| Ethers[Ethers.js Provider]
     Ethers -->|Query Trust Score & Payments| SepoliaContract[CredLayer Core Sepolia]
     Ethers -->|Query Balance| MXNBToken[MXNB Token Arbitrum]
-    Frontend -->|Injects User Context| GeminiAPI[Google Gemini API v1beta]
+    Frontend -->|Injects User Context| GeminiAPI[Google Gemini API v1beta / Mock Fallback]
     GeminiAPI -->|Returns formatted text| NovaUI[NOVA Chat Interface]
     Frontend -->|Generates verified PDF| jsPDF[jsPDF Report Engine]
 ```
@@ -111,24 +93,27 @@ graph TD
 
 * **Frontend:** React + Vite + Vanilla CSS / Tailwind CSS
 * **Blockchain:** Wagmi + Ethers.js v6 + Viem
-* **Artificial Intelligence:** Google Gemini API (`gemini-2.5-flash`)
-* **UX/Animations:** GSAP + Lenis Smooth Scroll
+* **Artificial Intelligence:** Google Gemini API (`gemini-2.5-flash`) with automatic local simulation fallback
+* **UX/Animations:** GSAP + Lenis Smooth Scroll + Framer Motion + Anime.js + Canvas API
 * **Reporting:** jsPDF
 
 ---
 
-# 📋 Progress & Pending Tasks (To-Do)
+# 📋 Progress & Roadmap (To-Do)
 
 ### Completed (100% Operational)
 * [x] **Smart Contract Deployments:** CredLayer Core, USDC, and MXNB integrated.
-* [x] **NOVA React Page:** Created `/nova` route and UI using the custom AI hook.
-* [x] **NOVA Static View:** Upgraded `public/IA/index.html` to share identical state with the React page.
-* [x] **Gemini API Migration:** Moved from Anthropic (400/Quota errors) to Gemini (`gemini-2.5-flash`) with enhanced speed.
-* [x] **CORS RPC Fix:** Swapped to `publicnode` Sepolia RPC to bypass browser blocking.
-* [x] **Markdown Parser:** Inline HTML formatter for bold/italic asterisks on both standalone pages and chat widgets.
 * [x] **Real-time Web3 Reads:** NOVA dynamically queries trust scores and balances based on the active wallet.
+* [x] **Hybrid AI Engine:** Upgraded `useAiAssistant` to support offline simulations if the API Key is a placeholder, and catch errors to fallback gracefully.
+* [x] **NOVA React Page:** Created `/nova` route and UI using the custom AI hook.
+* [x] **Onboarding Workflow**: Implemented onboarding, ENS registration, and interest choices.
+* [x] **3D Card FX**: Added mouse tilt/glare parallax animations to the credit card preview.
+* [x] **Repayment MetaMask Integration**: Implemented network switching code for paying with MXNB on Arbitrum Sepolia.
 
-### Pending / To-Do
-* [ ] **Demo Wallet Seed:** Prepare a test wallet seed with Sepolia ETH / MXNB / USDC to demonstrate live score growth.
-* [ ] **Report Link Verification:** Audit the generated PDF report QR codes and links.
-* [ ] **Hosting Deployment:** Deploy to Vercel/Netlify/Firebase for the live demo.
+### Next Steps / Missing Features (Gap Analysis)
+* [ ] **On-Chain Subdomain & Loan Writes**: Migrate the subdomain registration and credit creation/repayment methods from simulated transactions to real contract writes on Scroll / Arbitrum.
+* [ ] **Arbitrum Stylus Contracts**: Port the reputation scoring algorithms and loan ledger code to Rust using Arbitrum Stylus to dramatically lower execution gas fees.
+* [ ] **Account Abstraction & Gasless Transactions**: Integrate paymasters (ERC-4337) to sponsor transaction gas fees, making the experience fully gasless for LATAM merchants.
+* [ ] **i18n Localization**: Implement unified language translation (English/Spanish/Portuguese) for regional target audiences.
+* [ ] **Progressive Web App (PWA) Support**: Package the web application so informal merchants can install and run it as an app on Android devices.
+* [ ] **EIP-3668 (CCIP Read)**: Enable CCIP read resolution for registered `.micro.eth` subdomains, allowing them to resolve natively on Metamask and other wallets.

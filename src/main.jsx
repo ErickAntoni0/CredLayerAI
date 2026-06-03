@@ -1,5 +1,6 @@
 import { WagmiConfig, createConfig, configureChains } from 'wagmi'
 import { mainnet, arbitrum, arbitrumGoerli, sepolia } from 'wagmi/chains'
+import { arbitrumSepolia } from 'viem/chains'
 import { publicProvider } from 'wagmi/providers/public'
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
@@ -21,16 +22,24 @@ if (typeof window !== 'undefined') {
 import App from './App'
 import './index.css'
 import './styles/membership-theme.css'
+import { SEPOLIA_RPC, ARBITRUM_SEPOLIA_RPC } from './config/chains'
 
-// Sepolia: publicnode por defecto (rpc.sepolia.org suele fallar); override con VITE_SEPOLIA_RPC_URL
 const RPC_SEPOLIA =
   (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SEPOLIA_RPC_URL) ||
-  'https://ethereum-sepolia-rpc.publicnode.com'
+  SEPOLIA_RPC
+const RPC_ARB_SEPOLIA =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_ARB_SEPOLIA_RPC_URL) ||
+  ARBITRUM_SEPOLIA_RPC
+
 const { chains, publicClient } = configureChains(
-  [sepolia, arbitrum, arbitrumGoerli, mainnet],
+  [sepolia, arbitrumSepolia, arbitrum, arbitrumGoerli, mainnet],
   [
     jsonRpcProvider({
-      rpc: (chain) => (chain.id === sepolia.id ? { http: RPC_SEPOLIA } : null)
+      rpc: (chain) => {
+        if (chain.id === sepolia.id) return { http: RPC_SEPOLIA }
+        if (chain.id === arbitrumSepolia.id) return { http: RPC_ARB_SEPOLIA }
+        return null
+      }
     }),
     publicProvider()
   ]

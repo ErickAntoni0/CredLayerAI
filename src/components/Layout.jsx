@@ -14,6 +14,8 @@ import {
   Sparkles,
   Brain
 } from 'lucide-react'
+import { useTrustScore } from '../hooks/useCredLayer'
+import { SEPOLIA_CHAIN_ID, ARBITRUM_SEPOLIA_CHAIN_ID } from '../config/chains'
 import { useWalletConnection } from '../hooks/useWalletConnection'
 import { AiAssistantProvider } from '../context/AiAssistantContext'
 import AIAssistantChat from './AIAssistantChat'
@@ -24,6 +26,7 @@ const Layout = () => {
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const { chain } = useNetwork()
+  const { score: onChainScore } = useTrustScore()
   const { userProfile, reputationScore, connectWallet, connectors } = useWalletConnection()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false)
@@ -53,6 +56,16 @@ const Layout = () => {
   }, [location.pathname, navLinks])
 
   const hideHeader = false
+
+  const networkStatus = useMemo(() => {
+    if (!chain) return { dot: 'bg-gray-400', label: 'Network' }
+    if (chain.unsupported) return { dot: 'bg-red-500', label: `Chain ${chain.id}` }
+    if (chain.id === SEPOLIA_CHAIN_ID) return { dot: 'bg-green-500', label: 'Sepolia' }
+    if (chain.id === ARBITRUM_SEPOLIA_CHAIN_ID) return { dot: 'bg-green-500', label: 'Arbitrum Sepolia' }
+    return { dot: 'bg-amber-500', label: chain.name || `Chain ${chain.id}` }
+  }, [chain])
+
+  const displayPts = onChainScore > 0 ? onChainScore : reputationScore
 
   const formattedAddress = useMemo(() => {
     if (!address) return null
@@ -103,8 +116,8 @@ const Layout = () => {
                     {/* Network & Account Combined */}
                     <div className="flex items-center bg-gray-50 border border-gray-200 rounded-full p-1 pl-4 pr-1 gap-4">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${chain?.unsupported ? 'bg-red-500' : 'bg-green-500'}`}></div>
-                        <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{chain?.name || 'Network'}</span>
+                        <div className={`w-2 h-2 rounded-full ${networkStatus.dot}`}></div>
+                        <span className="text-xs font-bold text-gray-600 uppercase tracking-wider">{networkStatus.label}</span>
                       </div>
 
                       <div className="h-4 w-px bg-gray-200"></div>
@@ -115,7 +128,7 @@ const Layout = () => {
                           <span className="text-xs font-bold font-mono">{userProfile?.ensName || formattedAddress}</span>
                         </div>
                         <div className="bg-white/10 px-2 py-1 rounded-lg">
-                          <span className="text-xs font-black">{reputationScore} PTS</span>
+                          <span className="text-xs font-black">{displayPts} PTS</span>
                         </div>
                       </div>
                     </div>

@@ -1778,7 +1778,7 @@ header.sticky .bg-black:hover {
 .layout-main .dashboard-card {
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(220, 38, 38, 0.2);
+  border: 1px solid rgba(108, 105, 105, 0.2);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
@@ -1787,7 +1787,7 @@ header.sticky .bg-black:hover {
 
 .layout-main .payment-card:hover,
 .layout-main .dashboard-card:hover {
-  border-color: rgba(220, 38, 38, 0.4);
+  border-color: rgba(150, 148, 148, 0.4);
   box-shadow: var(--shadow-lg);
   transform: translateY(-2px);
 }
@@ -1822,22 +1822,22 @@ header.sticky .bg-black:hover {
 }
 
 .layout-main th {
-  background: rgba(220, 38, 38, 0.15);
-  color: var(--primary-color);
+  background: rgb(0, 0, 0);
+  color: var(--white-color);
   padding: var(--spacing-md);
   text-align: left;
   font-weight: 600;
-  border-bottom: 2px solid rgba(220, 38, 38, 0.3);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
 }
 
 .layout-main td {
   padding: var(--spacing-md);
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  border-bottom: 1px solid rgba(137, 134, 134, 0.1);
   color: var(--gray-300);
 }
 
 .layout-main tr:hover {
-  background: rgba(220, 38, 38, 0.05);
+  background: rgba(132, 130, 130, 0.05);
 }
 
 /* Responsive */
