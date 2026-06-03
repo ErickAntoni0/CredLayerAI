@@ -89,7 +89,7 @@ const CinematicBackground = () => {
         // Draw particle
         ctx.beginPath()
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
-        ctx.fillStyle = `rgba(139, 92, 246, ${p.alpha})` // Violet theme
+        ctx.fillStyle = `rgba(245, 158, 11, ${p.alpha})` // Gold theme
         ctx.fill()
       })
 
@@ -107,7 +107,7 @@ const CinematicBackground = () => {
             ctx.beginPath()
             ctx.moveTo(p1.x, p1.y)
             ctx.lineTo(p2.x, p2.y)
-            ctx.strokeStyle = `rgba(168, 85, 247, ${alpha})`
+            ctx.strokeStyle = `rgba(139, 92, 246, ${alpha})`
             ctx.lineWidth = 0.5
             ctx.stroke()
           }
@@ -187,11 +187,11 @@ const CounterItem = ({ label, value, targetNum, suffix = '', icon: Icon, descrip
   }, [targetNum])
 
   return (
-    <div ref={elementRef} className="relative bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 flex flex-col justify-between overflow-hidden group hover:border-indigo-500/20 transition-all duration-300">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/10 transition-colors duration-500" />
+    <div ref={elementRef} className="relative bg-zinc-900/40 backdrop-blur-xl border border-white/5 rounded-3xl p-8 flex flex-col justify-between overflow-hidden group hover:border-[#F59E0B]/20 transition-all duration-300">
+      <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-2xl pointer-events-none transition-colors duration-500" style={{ background: 'rgba(245,158,11,0.04)' }} />
       <div className="flex items-center justify-between mb-4">
         <span className="text-zinc-500 text-sm font-semibold tracking-wider uppercase">{label}</span>
-        <div className="p-3 bg-white/5 rounded-2xl text-indigo-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/10 transition-all duration-300">
+        <div className="p-3 bg-white/5 rounded-2xl transition-all duration-300" style={{ color: '#F59E0B' }}>
           <Icon size={20} />
         </div>
       </div>
@@ -512,16 +512,16 @@ const Community = () => {
 
       {/* ── BACKGROUND LIGHTING AND SHADOW DEPT ── */}
       <CinematicBackground />
-      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-500/10 blur-[130px] pointer-events-none z-0 anime-glow-blob" />
-      <div className="absolute top-[40%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-violet-600/5 blur-[160px] pointer-events-none z-0 anime-glow-blob" />
-      <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full bg-pink-500/5 blur-[140px] pointer-events-none z-0 anime-glow-blob" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full blur-[130px] pointer-events-none z-0 anime-glow-blob" style={{ background: 'rgba(245,158,11,0.07)' }} />
+      <div className="absolute top-[40%] right-[-10%] w-[60vw] h-[60vw] rounded-full blur-[160px] pointer-events-none z-0 anime-glow-blob" style={{ background: 'rgba(139,92,246,0.05)' }} />
+      <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] rounded-full blur-[140px] pointer-events-none z-0 anime-glow-blob" style={{ background: 'rgba(245,158,11,0.04)' }} />
 
       {/* ==========================================
           NAVBAR: FLOATING GLASSMORPHIC
          ========================================== */}
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-[90%] max-w-6xl h-16 bg-zinc-900/30 backdrop-blur-xl border border-white/5 rounded-full z-50 flex items-center justify-between px-6 md:px-10 transition-all duration-300">
         <a href="/landing/index.html" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Sparkles className="text-indigo-400" size={20} />
+          <Sparkles style={{ color: '#F59E0B' }} size={20} />
           <span className="font-extrabold tracking-tight text-white text-lg font-sans bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-zinc-400">CredLayer Community</span>
         </a>
 
@@ -570,10 +570,11 @@ const Community = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-md mb-8 hover:border-indigo-500/20 transition-all duration-300"
+          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/5 backdrop-blur-md mb-8 transition-all duration-300"
+          style={{ borderColor: 'rgba(245,158,11,0.2)' }}
         >
-          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse-slow" />
-          <span className="text-[11px] font-bold text-indigo-300 uppercase tracking-widest font-mono">Arbitrum • Scroll • ENS Identity</span>
+          <span className="w-2 h-2 rounded-full animate-pulse-slow" style={{ background: '#F59E0B' }} />
+          <span className="text-[11px] font-bold uppercase tracking-widest font-mono" style={{ color: '#F59E0B' }}>Arbitrum • Scroll • ENS Identity</span>
         </motion.div>
 
         <motion.h1
@@ -583,7 +584,7 @@ const Community = () => {
           className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-8 max-w-5xl leading-[1.08] bg-clip-text text-transparent bg-gradient-to-b from-white via-zinc-100 to-zinc-400"
         >
           The AI-Native Layer for <br />
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400">Community Economies</span>
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #F59E0B, #FBBF24, #8B5CF6)' }}>Community Economies</span>
         </motion.h1>
 
         <motion.p
@@ -689,7 +690,7 @@ const Community = () => {
       <section id="features" className="py-24 px-6 max-w-6xl mx-auto z-10 relative">
         <div className="text-center md:text-left mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="max-w-xl">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Ecosistema Colaborativo</span>
+            <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Ecosistema Colaborativo</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
               Bento Grid: Comunidades Pioneras
             </h2>
@@ -713,7 +714,7 @@ const Community = () => {
               <div className={`absolute -top-12 -right-12 w-48 h-48 bg-gradient-to-br ${card.color} rounded-full blur-3xl pointer-events-none opacity-40 group-hover:opacity-75 transition-opacity duration-500`} />
 
               <div>
-                <span className="text-[10px] font-bold text-indigo-400 font-mono uppercase tracking-widest block mb-4">
+                <span className="text-[10px] font-bold font-mono uppercase tracking-widest block mb-4" style={{ color: '#F59E0B' }}>
                   {card.eyebrow}
                 </span>
                 <h3 className="text-xl font-bold text-white mb-3 group-hover:text-indigo-200 transition-colors duration-300">
@@ -783,7 +784,7 @@ const Community = () => {
          ========================================== */}
       <section id="discussions" className="py-24 px-6 max-w-6xl mx-auto z-10 relative">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Conversación On-Chain</span>
+          <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Conversación On-Chain</span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Discusiones en Tendencia
           </h2>
@@ -804,7 +805,7 @@ const Community = () => {
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                  <span className="text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider font-mono" style={{ color: '#F59E0B', background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
                     {disc.category}
                   </span>
                   <span className="text-xs text-zinc-500">{disc.time}</span>
@@ -856,7 +857,7 @@ const Community = () => {
       <section className="py-24 px-6 max-w-6xl mx-auto z-10 relative">
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 mb-16">
           <div className="max-w-xl text-left">
-            <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Líderes de Ecosistema</span>
+            <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Líderes de Ecosistema</span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
               Creadores Destacados
             </h2>
@@ -921,7 +922,7 @@ const Community = () => {
          ========================================== */}
       <section id="onboarding" className="py-24 px-6 max-w-4xl mx-auto z-10 relative">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Paso a Paso</span>
+          <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Paso a Paso</span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Únete a la Economía CredLayer
           </h2>
@@ -938,15 +939,18 @@ const Community = () => {
           <div className="flex items-center justify-between max-w-md mx-auto mb-10 border-b border-zinc-800 pb-6">
             {[1, 2, 3, 4].map((step) => (
               <div key={step} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 font-mono ${onboardingStep === step
-                  ? 'bg-white text-zinc-950 shadow-md scale-110'
-                  : onboardingStep > step
-                    ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/40'
-                    : 'bg-zinc-800 text-zinc-500'
-                  }`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 font-mono ${onboardingStep === step ? 'scale-110' : ''}`}
+                  style={onboardingStep === step
+                    ? { background: '#F59E0B', color: '#0F172A', boxShadow: '0 0 16px rgba(245,158,11,0.4)' }
+                    : onboardingStep > step
+                    ? { background: 'rgba(139,92,246,0.2)', color: '#A78BFA', border: '1px solid rgba(139,92,246,0.4)' }
+                    : { background: '#27272a', color: '#71717a' }
+                  }
+                >
                   {onboardingStep > step ? <Check size={12} /> : step}
                 </div>
-                {step < 4 && <div className={`w-6 md:w-12 h-0.5 ${onboardingStep > step ? 'bg-indigo-500/30' : 'bg-zinc-800'}`} />}
+                {step < 4 && <div className="w-6 md:w-12 h-0.5" style={{ background: onboardingStep > step ? 'rgba(245,158,11,0.3)' : '#3f3f46' }} />}
               </div>
             ))}
           </div>
@@ -963,7 +967,7 @@ const Community = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="text-center"
               >
-                <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 mx-auto mb-6">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', color: '#F59E0B' }}>
                   <Wallet size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Conecta tu Billetera Web3</h3>
@@ -972,7 +976,10 @@ const Community = () => {
                 </p>
                 <button
                   onClick={() => setIsWalletModalOpen(true)}
-                  className="px-8 py-3 bg-white text-zinc-950 hover:bg-zinc-200 rounded-full font-bold text-sm transition-all duration-300 shadow-md shadow-white/5 hover:scale-105"
+                  className="px-8 py-3 rounded-full font-bold text-sm transition-all duration-300 hover:scale-105 cursor-pointer"
+                  style={{ background: '#8B5CF6', color: '#FFFFFF', boxShadow: '0 0 20px rgba(139,92,246,0.3)' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
                 >
                   Conectar Wallet
                 </button>
@@ -988,7 +995,7 @@ const Community = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="max-w-md mx-auto"
               >
-                <div className="w-16 h-16 bg-violet-500/10 border border-violet-500/20 rounded-2xl flex items-center justify-center text-violet-400 mx-auto mb-6">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', color: '#A78BFA' }}>
                   <Award size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-white text-center mb-2">Reclama tu Identidad ENS</h3>
@@ -1016,7 +1023,8 @@ const Community = () => {
                   <button
                     type="submit"
                     disabled={isRegistering}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-600/50 text-white rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                    style={{ background: isRegistering ? 'rgba(139,92,246,0.5)' : '#8B5CF6', color: '#FFFFFF' }}
                   >
                     {isRegistering ? (
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1040,7 +1048,7 @@ const Community = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="max-w-md mx-auto text-center"
               >
-                <div className="w-16 h-16 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center text-emerald-400 mx-auto mb-6">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', color: '#F59E0B' }}>
                   <Sparkles size={28} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Selecciona tus Intereses</h3>
@@ -1068,7 +1076,10 @@ const Community = () => {
                 </div>
                 <button
                   onClick={() => setOnboardingStep(4)}
-                  className="w-full py-3 bg-white text-zinc-950 hover:bg-zinc-200 rounded-xl font-bold text-sm transition-colors"
+                  className="w-full py-3 rounded-xl font-bold text-sm transition-colors cursor-pointer"
+                  style={{ background: '#8B5CF6', color: '#FFFFFF' }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
                 >
                   Continuar
                 </button>
@@ -1084,7 +1095,7 @@ const Community = () => {
                 exit={{ opacity: 0, y: -10 }}
                 className="max-w-md mx-auto text-center"
               >
-                <div className="w-16 h-16 bg-indigo-500/20 border border-indigo-500/30 rounded-full flex items-center justify-center text-emerald-400 mx-auto mb-6">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.35)', color: '#10B981' }}>
                   <ShieldCheck size={36} />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-1">¡Registro Completado!</h3>
@@ -1123,7 +1134,10 @@ const Community = () => {
                       toast.success('Abriendo dashboard con tu nuevo perfil!')
                       navigate('/dashboard')
                     }}
-                    className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm transition-colors"
+                    className="flex-1 py-3 rounded-xl font-bold text-sm transition-colors cursor-pointer"
+                    style={{ background: '#8B5CF6', color: '#FFFFFF' }}
+                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+                    onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
                   >
                     Ir al Dashboard
                   </button>
@@ -1150,7 +1164,7 @@ const Community = () => {
          ========================================== */}
       <section className="py-24 px-6 max-w-6xl mx-auto z-10 relative">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Testimonios</span>
+          <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Testimonios</span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Qué Dicen las Comunidades
           </h2>
@@ -1170,7 +1184,7 @@ const Community = () => {
                 "{test.quote}"
               </p>
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-indigo-500/10 flex items-center justify-center text-xs font-bold text-indigo-300 font-mono">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold font-mono" style={{ background: 'rgba(245,158,11,0.1)', color: '#F59E0B' }}>
                   {test.author.slice(0, 1)}
                 </div>
                 <div>
@@ -1188,7 +1202,7 @@ const Community = () => {
          ========================================== */}
       <section className="py-24 px-6 max-w-4xl mx-auto z-10 relative">
         <div className="text-center mb-16">
-          <span className="text-xs font-bold text-indigo-400 uppercase tracking-widest font-mono block mb-3">Preguntas Frecuentes</span>
+          <span className="text-xs font-bold uppercase tracking-widest font-mono block mb-3" style={{ color: '#F59E0B' }}>Preguntas Frecuentes</span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Resuelve tus Dudas
           </h2>
@@ -1212,7 +1226,7 @@ const Community = () => {
 
           <div className="md:col-span-1">
             <a href="/landing/index.html" className="flex items-center gap-2 hover:opacity-80 transition-opacity mb-4">
-              <Sparkles className="text-indigo-400" size={20} />
+              <Sparkles style={{ color: '#F59E0B' }} size={20} />
               <span className="font-extrabold tracking-tight text-white text-lg font-sans">CredLayer AI</span>
             </a>
             <p className="text-zinc-500 text-xs leading-relaxed mb-6">
@@ -1257,7 +1271,10 @@ const Community = () => {
               />
               <button
                 onClick={() => toast.success('Suscripción exitosa.')}
-                className="bg-white hover:bg-zinc-200 text-zinc-950 text-xs font-bold px-3.5 py-2 rounded-xl transition-colors"
+                className="text-xs font-bold px-3.5 py-2 rounded-xl transition-colors cursor-pointer"
+                style={{ background: '#F59E0B', color: '#0F172A' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
               >
                 Unirme
               </button>

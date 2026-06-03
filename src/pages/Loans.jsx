@@ -30,6 +30,7 @@ import latamImg from '../assets/latam1.jpg'
 import handsImg from '../assets/imageHands.webp'
 import { ARBITRUM_SEPOLIA_RPC, ensureArbitrumSepoliaNetwork } from '../config/chains'
 import { useNavigate } from 'react-router-dom';
+import LoanSparkline from '../components/LoanSparkline'
 import '../styles/loans.css'
 
 const MXNB_ADDRESS = '0xf197ffc28c23e0309b5559e7a166f2c6164c80aa'
@@ -431,11 +432,13 @@ const Loans = () => {
           <span className="loan-stat-hint loan-stat-hint--mxnb">Arbitrum Sepolia Live</span>
         </article>
 
-        <article className="loan-stat-card">
-          <span className="loan-stat-label">Active Principal</span>
-          <strong className="loan-stat-value">{metrics.activePrincipalFormatted}</strong>
-          <span className="loan-stat-hint">USDC in circulation</span>
-        </article>
+        <LoanSparkline
+          data={[40, 36, 38, 30, 32, 24, 26, 18, 20, 10, 12, 8, 4]}
+          color="green"
+          label="USDC en circulación · 24h"
+          value={metrics.activePrincipalFormatted}
+          delta="↑ 8.3%"
+        />
 
         <article className="loan-stat-card">
           <span className="loan-stat-label">Average Rate</span>
