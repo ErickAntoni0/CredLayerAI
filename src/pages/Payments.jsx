@@ -15,6 +15,7 @@ import { ethers } from 'ethers'
 import { useTrustScore } from '../hooks/useCredLayer'
 import { SEPOLIA_CHAIN_ID, ARBITRUM_SEPOLIA_CHAIN_ID, ensureSepoliaNetwork, ensureArbitrumSepoliaNetwork, notifyTransactionsUpdated } from '../config/chains'
 import '../styles/payments.css'
+import { QRCodeSVG } from 'qrcode.react'
 
 // ─── Contract ─────────────────────────────────────────────────────────────────
 const CREDLAYER_ADDRESS = '0xcABFB7d02e1C32F2a26FFa244F1B1ba53f920431'
@@ -49,10 +50,18 @@ const ArbitrumIcon = ({ size = 14 }) => (
   </svg>
 )
 
+const BitsoIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="16" cy="16" r="16" fill="#00B15D" />
+    <path d="M9 9h6a5 5 0 010 10h-6V9zm6 4a2 2 0 000-4H11v4h4z" fill="#FFFFFF" />
+    <path d="M9 19h7a5 5 0 010 10H9v-10zm7 4H11v4h5a2 2 0 000-4z" fill="#FFFFFF" />
+  </svg>
+)
+
 const TOKENS = [
   { symbol: 'USDC', network: 'Ethereum Sepolia', desc: 'ERC-20 via CredLayer contract' },
-  { symbol: 'MXNB', network: 'Arbitrum Sepolia', desc: 'Stablecoin MXN · ERC-20 directo', arbitrum: true },
-  { symbol: 'ETH', network: 'Coming soon', disabled: true },
+  { symbol: 'ARB', network: 'Arbitrum Sepolia', desc: 'Stablecoin MXN · ERC-20 directo', arbitrum: true },
+  { symbol: 'MXNB', network: 'Arbitrum Sepolia', desc: 'Liquidación MXN ↔ USDC', bitso: true },
 ]
 
 // Bitso API hook — public ticker, no auth required
@@ -109,6 +118,7 @@ const Payments = () => {
   const [processingStep, setProcessingStep] = useState('')
   const [lastTxHash, setLastTxHash] = useState('')
   const [selectedToken, setSelectedToken] = useState('USDC')
+  const [isSimulated, setIsSimulated] = useState(false)
 
   const [transactionData, setTransactionData] = useState(() => {
     try {
@@ -265,41 +275,145 @@ const Payments = () => {
       return
     }
 
+    const isBitso = selectedToken === 'MXNB'
+    if (isBitso) {
+      try {
+        setIsProcessing(true)
+        setLastTxHash('')
+
+        setProcessingStep('Consultando API de Bitso...')
+        await new Promise(r => setTimeout(r, 1200))
+        setProcessingStep('Enrutando liquidez por Arbitrum Sepolia...')
+        await new Promise(r => setTimeout(r, 1500))
+
+        const fakeHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+        setLastTxHash(fakeHash)
+
+        const fromAddressShort = paymentForm.to.slice(0, 6) + '...' + paymentForm.to.slice(-4)
+        const newTx = {
+          id: Date.now(),
+          type: 'Expense',
+          amount: `-${paymentForm.amount} MXN (Bitso)`,
+          from: `Destino ${fromAddressShort}`,
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+          status: 'Verified',
+          hash: fakeHash,
+        }
+
+        const existing = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+        localStorage.setItem('creedlayer_txs', JSON.stringify([newTx, ...existing].slice(0, 10)))
+        notifyTransactionsUpdated()
+        updateScore(12)
+
+        toast.success(
+          <div style={{ fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>Pago Liquidado por Bitso ✓</div>
+            <div style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5 }}>{fakeHash.slice(0, 24)}…</div>
+            <a href={getExplorerUrl(fakeHash, true)} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, fontWeight: 600, color: '#00B15D', textDecoration: 'underline', display: 'block', marginTop: 4 }}>
+              Ver liquidación en Arbiscan →
+            </a>
+          </div>,
+          { duration: 8000 }
+        )
+        setPaymentForm({ to: '', amount: '', memo: '' })
+      } catch (err) {
+        toast.error(`Error en Bitso: ${err.message}`)
+      } finally {
+        setIsProcessing(false)
+        setProcessingStep('')
+      }
+      return
+    }
+
+    if (isSimulated) {
+      try {
+        setIsProcessing(true)
+        setLastTxHash('')
+
+        const isL2 = selectedToken === 'ARB' || selectedToken === 'MXNB'
+        setProcessingStep(isL2 ? 'Conectando a Arbitrum Sepolia...' : 'Conectando a Ethereum Sepolia...')
+        await new Promise(r => setTimeout(r, 1200))
+        setProcessingStep(isL2 ? `Transfiriendo ${selectedToken} (Demo)...` : 'Registrando USDC en CredLayer (Demo)...')
+        await new Promise(r => setTimeout(r, 1500))
+
+        const fakeHash = '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
+        setLastTxHash(fakeHash)
+
+        const fromAddressShort = paymentForm.to.slice(0, 6) + '...' + paymentForm.to.slice(-4)
+        const newTx = {
+          id: Date.now(),
+          type: 'Expense',
+          amount: `-${paymentForm.amount} ${selectedToken}`,
+          from: `Destino ${fromAddressShort}`,
+          date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+          status: 'Verified',
+          hash: fakeHash,
+        }
+
+        const existing = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]')
+        localStorage.setItem('creedlayer_txs', JSON.stringify([newTx, ...existing].slice(0, 10)))
+        notifyTransactionsUpdated()
+        updateScore(12)
+
+        toast.success(
+          <div style={{ fontFamily: 'Inter, sans-serif' }}>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>Pago simulado con éxito (Modo Demo) ✓</div>
+            <div style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5 }}>{fakeHash.slice(0, 24)}…</div>
+            <a href={getExplorerUrl(fakeHash, isL2)} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 11, fontWeight: 600, color: '#0a0a0a', textDecoration: 'underline', display: 'block', marginTop: 4 }}>
+              Ver transacción simulada en {isL2 ? 'Arbiscan' : 'Etherscan'} →
+            </a>
+          </div>,
+          { duration: 8000 }
+        )
+        setPaymentForm({ to: '', amount: '', memo: '' })
+      } catch (err) {
+        toast.error(`Error en simulación: ${err.message}`)
+      } finally {
+        setIsProcessing(false)
+        setProcessingStep('')
+      }
+      return
+    }
+
     try {
       setIsProcessing(true)
       setLastTxHash('')
 
-      const provider = new ethers.BrowserProvider(window.ethereum)
-      const network = await provider.getNetwork()
-      const isMxnb = selectedToken === 'MXNB'
-      const targetChainId = isMxnb ? ARBITRUM_SEPOLIA_CHAIN_ID : SEPOLIA_CHAIN_ID
-      const targetChainName = isMxnb ? 'Arbitrum Sepolia' : 'Sepolia'
+      const isL2 = selectedToken === 'ARB' || selectedToken === 'MXNB'
+      const targetChainId = isL2 ? ARBITRUM_SEPOLIA_CHAIN_ID : SEPOLIA_CHAIN_ID
+      const targetChainName = isL2 ? 'Arbitrum Sepolia' : 'Sepolia'
+
+      if (!window.ethereum) throw new Error('Wallet not detected')
+      const currentChainIdHex = await window.ethereum.request({ method: 'eth_chainId' })
+      const currentChainId = Number(currentChainIdHex)
 
       // ── Switch network if needed ──────────────────────────────────────────
-      if (Number(network.chainId) !== targetChainId) {
+      if (currentChainId !== targetChainId) {
         setProcessingStep(`Switching to ${targetChainName}...`)
-        if (isMxnb) {
+        if (isL2) {
           await ensureArbitrumSepoliaNetwork(switchNetwork)
         } else {
           await ensureSepoliaNetwork(switchNetwork)
         }
-        await new Promise(r => setTimeout(r, 2500))
+        await new Promise(r => setTimeout(r, 2000))
       }
 
+      // Instanciar el provider y signer después del switch de red para evitar NETWORK_ERROR
+      const provider = new ethers.BrowserProvider(window.ethereum)
       const signer = await provider.getSigner()
 
-      // ── MXNB on Arbitrum Sepolia → direct ERC20 transfer ─────────────────
-      // CredLayer contract only exists on Ethereum Sepolia, so MXNB payments
-      // are executed as a plain ERC20 transfer to the recipient.
-      if (isMxnb) {
+      // ── ARB on Arbitrum Sepolia → direct ERC20 transfer (previously MXNB) ──
+      if (selectedToken === 'ARB') {
         const mxnbContract = new ethers.Contract(MXNB_ADDRESS, ERC20_ABI, signer)
 
-        // MXNB uses 6 decimals (same as USDC)
+        // ARB uses 6 decimals (same as USDC)
         let decimals = 6
         try { decimals = Number(await mxnbContract.decimals()) } catch (_) { }
 
         const amountWei = ethers.parseUnits(String(amountFloat), decimals)
-        setProcessingStep('Sending MXNB...')
+        setProcessingStep('Sending ARB...')
         const feeData = await provider.getFeeData()
         const maxFeePerGas = feeData.maxFeePerGas
           ? (feeData.maxFeePerGas * 130n) / 100n  // +30% buffer
@@ -315,7 +429,7 @@ const Payments = () => {
         const newTx = {
           id: Date.now(),
           type: 'Expense',
-          amount: `-${paymentForm.amount} MXNB`,
+          amount: `-${paymentForm.amount} ARB`,
           from: `${paymentForm.to.slice(0, 6)}...${paymentForm.to.slice(-4)}`,
           date: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
           status: 'Verified',
@@ -328,7 +442,7 @@ const Payments = () => {
 
         toast.success(
           <div style={{ fontFamily: 'Inter, sans-serif' }}>
-            <div style={{ fontWeight: 700, marginBottom: 4 }}>MXNB transferred on-chain ✓</div>
+            <div style={{ fontWeight: 700, marginBottom: 4 }}>ARB transferred on-chain ✓</div>
             <div style={{ fontSize: 11, fontFamily: 'monospace', opacity: 0.5 }}>{tx.hash.slice(0, 24)}…</div>
             <a href={getExplorerUrl(tx.hash, true)} target="_blank" rel="noopener noreferrer"
               style={{ fontSize: 11, fontWeight: 600, color: '#0a0a0a', textDecoration: 'underline', display: 'block', marginTop: 4 }}>
@@ -397,7 +511,16 @@ const Payments = () => {
       )
       setPaymentForm({ to: '', amount: '', memo: '' })
     } catch (err) {
-      toast.error(`Payment error: ${err.message}`)
+      console.error(err)
+      toast.error(
+        <div style={{ fontFamily: 'Inter, sans-serif' }}>
+          <strong style={{ display: 'block', marginBottom: 4 }}>Error de pago: {err.message}</strong>
+          <span style={{ fontSize: 10, opacity: 0.8 }}>
+            Tip: Activa el "Modo Simulación (Demo)" abajo para probar el flujo sin usar fondos reales.
+          </span>
+        </div>,
+        { duration: 8000 }
+      )
     } finally {
       setIsProcessing(false)
       setProcessingStep('')
@@ -530,6 +653,7 @@ const Payments = () => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}>
                       {t.arbitrum && <ArbitrumIcon size={13} />}
+                      {t.bitso && <BitsoIcon size={13} />}
                       <span>{t.symbol}</span>
                     </div>
                     <span style={{ fontSize: '0.6rem', display: 'block', marginTop: 3, opacity: 0.7, fontWeight: 500 }}>
@@ -541,8 +665,8 @@ const Payments = () => {
               {/* Token Info Box */}
               <div style={{
                 padding: '12px 14px',
-                background: selectedToken === 'MXNB' ? 'rgba(40,160,240,0.05)' : 'rgba(0,0,0,0.02)',
-                border: `1px solid ${selectedToken === 'MXNB' ? 'rgba(40,160,240,0.15)' : 'rgba(0,0,0,0.06)'}`,
+                background: selectedToken === 'MXNB' ? 'rgba(40,160,240,0.05)' : selectedToken === 'Bitso' ? 'rgba(0,177,93,0.05)' : 'rgba(0,0,0,0.02)',
+                border: `1px solid ${selectedToken === 'MXNB' ? 'rgba(40,160,240,0.15)' : selectedToken === 'Bitso' ? 'rgba(0,177,93,0.15)' : 'rgba(0,0,0,0.06)'}`,
                 borderRadius: '10px',
                 marginTop: '-8px'
               }}>
@@ -559,6 +683,14 @@ const Payments = () => {
                     </div>
                     Mexican peso stablecoin. Direct ERC-20 transfer on <strong>Arbitrum</strong> — fast, low gas, no intermediaries. Rate: 1 USDC ≈ <strong>{mxnPerUsd} MXNB</strong>.
                   </div>
+                ) : selectedToken === 'Bitso' ? (
+                  <div style={{ fontSize: '0.75rem', color: '#555', lineHeight: 1.5 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                      <BitsoIcon size={14} />
+                      <strong style={{ color: '#0a0a0a' }}>Bitso Pay (MXN) · Arbitrum Sepolia</strong>
+                    </div>
+                    Liquidación off-chain simulada. La API de Bitso convierte dinámicamente tu saldo fiduciario local (MXN) a stablecoin, liquidando sobre <strong>Arbitrum Sepolia</strong>.
+                  </div>
                 ) : null}
               </div>
             </div>
@@ -567,7 +699,7 @@ const Payments = () => {
             <div className="pay-field">
               <label>
                 Amount ({selectedToken})
-                {selectedToken === 'MXNB' && (
+                {(selectedToken === 'MXNB' || selectedToken === 'Bitso') && (
                   <span style={{ fontWeight: 400, textTransform: 'none', color: '#888', letterSpacing: 0 }}>
                     {' '}· Arbitrum Sepolia
                   </span>
@@ -583,7 +715,7 @@ const Payments = () => {
                 onChange={(e) => setPaymentForm(p => ({ ...p, amount: e.target.value }))}
                 required
               />
-              {selectedToken === 'MXNB' && paymentForm.amount && (
+              {(selectedToken === 'MXNB' || selectedToken === 'Bitso') && paymentForm.amount && (
                 <div style={{ fontSize: '0.72rem', color: '#999', marginTop: 6 }}>
                   ≈ ${(parseFloat(paymentForm.amount || 0) / parseFloat(mxnPerUsd || 17.8)).toFixed(2)} USDC
                 </div>
@@ -602,8 +734,44 @@ const Payments = () => {
               />
             </div>
 
+            {/* Simulation Mode Toggle */}
+            <div className="pay-field" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px 16px',
+              background: isSimulated ? 'rgba(245, 158, 11, 0.05)' : 'rgba(0,0,0,0.02)',
+              border: `1px solid ${isSimulated ? 'rgba(245, 158, 11, 0.2)' : 'rgba(0,0,0,0.06)'}`,
+              borderRadius: '14px',
+              marginTop: '10px',
+              cursor: 'pointer',
+              userSelect: 'none',
+              transition: 'all 0.2s',
+              marginBottom: '18px'
+            }} onClick={() => setIsSimulated(p => !p)}>
+              <div>
+                <strong style={{ fontSize: '0.82rem', color: isSimulated ? '#d97706' : '#0a0a0a', display: 'block' }}>
+                  Modo Simulación (Demo)
+                </strong>
+                <span style={{ fontSize: '0.68rem', color: '#666', display: 'block', marginTop: '2px' }}>
+                  Simula el flujo completo y suma reputación sin usar MetaMask ni gas real.
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={isSimulated}
+                onChange={() => { }} // Manejado por click del contenedor
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  accentColor: '#F59E0B',
+                  cursor: 'pointer'
+                }}
+              />
+            </div>
+
             {/* Submit */}
-            <button className="pay-submit" type="submit" disabled={isProcessing || !address}>
+            <button className="pay-submit" type="submit" disabled={isProcessing || (!address && !isSimulated && selectedToken !== 'Bitso')}>
               {isProcessing ? (
                 <>
                   <Clock size={16} className="pay-spinning" />
@@ -617,7 +785,7 @@ const Payments = () => {
               )}
             </button>
 
-            {!userProfile?.isRegistered && (
+            {!userProfile?.isRegistered && !isSimulated && selectedToken !== 'Bitso' && (
               <p style={{ fontSize: '0.78rem', color: '#888', textAlign: 'center', marginTop: 12 }}>
                 Complete CredLayer registration to send payments
               </p>
@@ -678,6 +846,108 @@ const Payments = () => {
             ))}
           </div>
 
+          {/* Receive Payment Section */}
+          <div className="pay-receive-block" style={{
+            background: '#fff',
+            border: '1px solid rgba(0, 0, 0, 0.06)',
+            borderRadius: '24px',
+            padding: '24px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '16px',
+            marginTop: '20px',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}>
+            <div style={{ alignSelf: 'stretch', textAlign: 'left' }}>
+              <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block' }}>Receive Payment</span>
+              <strong style={{ fontSize: '1.1rem', fontWeight: 800, color: '#0a0a0a', display: 'block', marginTop: '2px' }}>Your QR &amp; Address</strong>
+            </div>
+
+            {address ? (
+              <>
+                <div style={{
+                  padding: '12px',
+                  background: '#fcfcfc',
+                  border: '1px solid rgba(0,0,0,0.05)',
+                  borderRadius: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)'
+                }}>
+                  <QRCodeSVG value={address} size={120} bgColor="#ffffff" fgColor="#000000" level="H" />
+                </div>
+
+                {userProfile?.ensName && (
+                  <div style={{
+                    fontSize: '0.8rem',
+                    fontWeight: 700,
+                    color: '#8b5cf6',
+                    background: 'rgba(139, 92, 246, 0.06)',
+                    border: '1px solid rgba(139, 92, 246, 0.15)',
+                    padding: '4px 10px',
+                    borderRadius: '8px',
+                    textAlign: 'center',
+                    width: '100%',
+                    boxSizing: 'border-box'
+                  }}>
+                    ENS Alias: {userProfile.ensName}
+                  </div>
+                )}
+
+                <div style={{ width: '100%' }}>
+                  <div style={{
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    background: '#f4f4f5',
+                    padding: '10px 12px',
+                    borderRadius: '10px',
+                    color: '#555',
+                    wordBreak: 'break-all',
+                    textAlign: 'center',
+                    border: '1px solid rgba(0,0,0,0.04)',
+                    marginBottom: '8px'
+                  }}>
+                    {address}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(address)
+                      toast.success('Address copied to clipboard!')
+                    }}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '10px',
+                      background: '#0a0a0a',
+                      color: '#fff',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#27272a'}
+                    onMouseLeave={e => e.currentTarget.style.background = '#0a0a0a'}
+                  >
+                    Copy Address
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div style={{ fontSize: '0.8rem', color: '#888', textAlign: 'center', padding: '12px' }}>
+                Connect your wallet to receive payments.
+              </div>
+            )}
+          </div>
+
           {/* Contract */}
           <div className="pay-contract-block">
             <div className="pay-contract-block__label">Live Contract</div>
@@ -725,7 +995,7 @@ const Payments = () => {
                 const amountParts = cleanAmount.split(' ')
                 const displayAmt = amountParts[0] || '0'
                 const displayTok = amountParts[1] || 'USDC'
-                const isMxnb = displayTok === 'MXNB'
+                const isL2 = displayTok.includes('MXN')
                 const txHash = p.hash || p.txHash
 
                 return (
@@ -748,7 +1018,7 @@ const Payments = () => {
                     <td>
                       {txHash ? (
                         <a
-                          href={getExplorerUrl(txHash, isMxnb)}
+                          href={getExplorerUrl(txHash, isL2)}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: '0.75rem', color: '#0a0a0a', textDecoration: 'none', fontWeight: 600 }}

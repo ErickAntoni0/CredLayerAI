@@ -67,7 +67,18 @@ function buildSystemPrompt(contractData, userAddress, pageContext = {}) {
     ? `${userAddress.slice(0, 6)}...${userAddress.slice(-4)}`
     : 'unknown'
 
-  const scoreValue = trustScore > 0 ? trustScore : (userAddress ? 320 : 0);
+  // Preferimos la reputación y transacciones guardadas localmente en la plataforma para consistencia en la demo
+  const localScore = parseInt(localStorage.getItem('reputationScore') || '580');
+  
+  let localPaymentsCount = 0;
+  try {
+    const localTxs = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]');
+    localPaymentsCount = localTxs.length;
+  } catch (_) {}
+
+  const scoreValue = localScore > 0 ? localScore : (trustScore > 0 ? trustScore : (userAddress ? 320 : 0));
+  const paymentsCount = localPaymentsCount > 0 ? localPaymentsCount : totalPayments;
+
   const isEligible = scoreValue >= 60;
   const maxCredit = scoreValue >= 800 ? '5,000 USDC' : scoreValue >= 400 ? '2,500 USDC' : '500 USDC';
 
@@ -80,7 +91,7 @@ DATOS REALES DEL USUARIO EN BLOCKCHAIN:
 - Wallet: ${shortAddr}
 - Trust Score on-chain (Ethereum Sepolia): ${scoreValue}/1000
 - Balance MXNB (Arbitrum Sepolia): ${mxnbBalance} MXN (Peso Mexicano on-chain)
-- Pagos registrados en contrato: ${totalPayments}
+- Pagos registrados en contrato: ${paymentsCount}
 - Contrato verificado: ${CREDLAYER_ADDRESS}
 - Red activa: Arbitrum Sepolia & Ethereum Sepolia
 - Elegibilidad de crédito: ${isEligible ? 'APTO (APROBADO)' : 'EN PROGRESO'}
@@ -238,8 +249,15 @@ export const useAiAssistant = (defaultIntent = 'general') => {
 // Responde con datos reales del userState pero sin llamada externa.
 // Perfecto para demos en vivo donde no quieres depender de internet.
 function buildMockReply(message = '', userState = {}, intent = 'general', payload = {}) {
-  const score = userState?.reputationScore ?? userState?.trustScore ?? 0
-  const payments = userState?.totalPayments ?? 0
+  const score = parseInt(localStorage.getItem('reputationScore') || '580')
+  
+  let localPaymentsCount = 0;
+  try {
+    const localTxs = JSON.parse(localStorage.getItem('creedlayer_txs') || '[]');
+    localPaymentsCount = localTxs.length;
+  } catch (_) {}
+
+  const payments = localPaymentsCount > 0 ? localPaymentsCount : (userState?.totalPayments ?? 0)
   const mxnbBalance = userState?.mxnbBalance ?? '12,450.00'
   const msg = message.toLowerCase()
 
@@ -267,6 +285,17 @@ function buildMockReply(message = '', userState = {}, intent = 'general', payloa
           tag: 'Gas'
         }
       ]
+    }
+  }
+
+  // Respuesta específica para incrementar o subir reputación
+  if (msg.includes('incrementar') || msg.includes('subir') || msg.includes('como incremento') || msg.includes('cómo incremento') || msg.includes('mejorar') || msg.includes('improve')) {
+    return {
+      message: `Para incrementar tu **Trust Score** en CredLayer AI, te recomiendo realizar las siguientes acciones dentro de la plataforma:
+1. **Registra tus pagos:** Cada transacción verificada de USDC en Sepolia o de MXNB en Arbitrum incrementa tu reputación en **+12 puntos**.
+2. **Mantén una regularidad operativa:** La consistencia a lo largo de las semanas influye fuertemente en el algoritmo.
+3. **Opera usando stablecoins de bajo gas:** Las transferencias rápidas en **MXNB** o las simulaciones integradas de **Bitso** registran volumen de transacciones de forma segura.
+Actualmente cuentas con **${payments} pagos registrados** y tu puntaje es de **${scoreValue} puntos**. Cada nueva actividad te acerca a un mayor límite de crédito.`,
     }
   }
 
