@@ -16,7 +16,7 @@ import Lenis from 'lenis'
 
 import '../styles/about.css'
 import founderAvatar from '../assets/founder_avatar.png'
-import trustVideo from '../assets/video1.mp4'
+
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -405,15 +405,47 @@ const AboutUs = () => {
                             </div>
                         </div>
 
-                        {/* Video player box */}
+                        {/* Demo visual card */}
                         <div className="lg:w-1/2 w-full">
-                            <div className="relative border border-zinc-800 rounded-[32px] overflow-hidden bg-zinc-950 shadow-2xl">
-                                <video 
-                                    src={trustVideo}
-                                    controls 
-                                    className="w-full h-auto aspect-video rounded-[32px]"
-                                    style={{ display: 'block' }}
-                                />
+                            <div className="relative border border-zinc-800 rounded-[32px] overflow-hidden bg-zinc-950 shadow-2xl aspect-video flex flex-col items-center justify-center gap-6 p-8">
+                                {/* Animated glow rings */}
+                                <div style={{
+                                    position: 'absolute', inset: 0,
+                                    background: 'radial-gradient(ellipse at 50% 50%, rgba(139,92,246,0.15) 0%, transparent 70%)',
+                                    pointerEvents: 'none'
+                                }} />
+                                {/* Trust Score display */}
+                                <div style={{ textAlign: 'center', zIndex: 1 }}>
+                                    <div style={{
+                                        fontSize: '4rem', fontWeight: 900, lineHeight: 1,
+                                        background: 'linear-gradient(135deg, #a78bfa, #60a5fa)',
+                                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'
+                                    }}>847</div>
+                                    <div style={{ color: '#a1a1aa', fontSize: '0.875rem', marginTop: '0.5rem', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Trust Score</div>
+                                </div>
+                                {/* Progress bar */}
+                                <div style={{ width: '80%', zIndex: 1 }}>
+                                    <div style={{ background: '#27272a', borderRadius: 999, height: 8, overflow: 'hidden' }}>
+                                        <div style={{
+                                            width: '84.7%', height: '100%', borderRadius: 999,
+                                            background: 'linear-gradient(90deg, #7c3aed, #3b82f6)',
+                                            boxShadow: '0 0 12px rgba(124,58,237,0.6)'
+                                        }} />
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.5rem', color: '#71717a', fontSize: '0.75rem' }}>
+                                        <span>0</span><span>Advanced</span><span>1000</span>
+                                    </div>
+                                </div>
+                                {/* Metrics row */}
+                                <div style={{ display: 'flex', gap: '2rem', zIndex: 1 }}>
+                                    {[{label: 'Pagos', val: '32'}, {label: 'USDC Vol.', val: '$4,280'}, {label: 'Racha', val: '12 sem'}].map(m => (
+                                        <div key={m.label} style={{ textAlign: 'center' }}>
+                                            <div style={{ color: '#fff', fontWeight: 700, fontSize: '1.125rem' }}>{m.val}</div>
+                                            <div style={{ color: '#52525b', fontSize: '0.75rem' }}>{m.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                                {/* Badge */}
                                 <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-zinc-800/50">
                                     Trust Protocol Demo
                                 </div>
