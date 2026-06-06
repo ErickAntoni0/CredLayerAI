@@ -8,6 +8,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 import { useAiAssistantContext } from '../context/AiAssistantContext'
 import { ReputationOnchainService } from '../services/ReputationOnchain'
+import founderAvatar from '../assets/founder_avatar.png'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -19,11 +20,11 @@ const PROFILE_STATS = [
 ]
 
 const REPUTATION_LEVELS = [
-  { min: 0, max: 199, level: 'Beginner', color: '#94A3B8', glow: 'rgba(148,163,184,0.3)', benefits: ['Basic payments'] },
-  { min: 200, max: 399, level: 'Intermediate', color: '#F59E0B', glow: 'rgba(245,158,11,0.3)', benefits: ['Small microloans', 'Standard rates'] },
-  { min: 400, max: 599, level: 'Advanced', color: '#FBBF24', glow: 'rgba(251,191,36,0.3)', benefits: ['Medium loans', 'Reduced rates'] },
-  { min: 600, max: 799, level: 'Expert', color: '#8B5CF6', glow: 'rgba(139,92,246,0.3)', benefits: ['Large loans', 'Low rates', 'Priority support'] },
-  { min: 800, max: 1000, level: 'Master', color: '#10B981', glow: 'rgba(16,185,129,0.3)', benefits: ['No limits', 'Minimum rates', 'Exclusive access'] }
+  { min: 0, max: 199, level: 'Beginner', color: '#9CA3AF', glow: 'rgba(156,163,175,0.15)', benefits: ['Basic payments'] },
+  { min: 200, max: 399, level: 'Intermediate', color: '#6B7280', glow: 'rgba(107,114,128,0.15)', benefits: ['Small microloans', 'Standard rates'] },
+  { min: 400, max: 599, level: 'Advanced', color: '#4B5563', glow: 'rgba(75,85,99,0.15)', benefits: ['Medium loans', 'Reduced rates'] },
+  { min: 600, max: 799, level: 'Expert', color: '#1F2937', glow: 'rgba(31,41,55,0.15)', benefits: ['Large loans', 'Low rates', 'Priority support'] },
+  { min: 800, max: 1000, level: 'Master', color: '#000000', glow: 'rgba(0,0,0,0.15)', benefits: ['No limits', 'Minimum rates', 'Exclusive access'] }
 ]
 
 // Branded Switch component using design system colors
@@ -35,7 +36,7 @@ const Switch = ({ checked = false, onChange }) => (
       defaultChecked={checked}
       onChange={onChange}
     />
-    <div className="w-11 h-6 bg-[#272F42] border border-[#334155] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#F59E0B]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#8B5CF6]" />
+    <div className="w-11 h-6 bg-[#E5E7EB] border border-[#D1D5DB] peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-black/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black" />
   </label>
 )
 
@@ -191,33 +192,26 @@ const Profile = () => {
     <div
       ref={pageRef}
       className="min-h-screen pb-24 w-full"
-      style={{ background: '#0F172A', fontFamily: "'Exo 2', sans-serif", color: '#F8FAFC' }}
+      style={{ background: '#FFFFFF', fontFamily: "'Inter', sans-serif", color: '#000000' }}
     >
-      {/* ── Ambient background glows ── */}
-      <div className="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-15%] right-[-10%] w-[50vw] h-[50vw] rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #8B5CF6 0%, transparent 70%)' }} />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #F59E0B 0%, transparent 70%)' }} />
-      </div>
 
       {/* ══════════════════════════════════
           HERO SECTION
       ══════════════════════════════════ */}
-      <section className="relative z-10 px-6 pt-10 pb-16 border-b max-w-6xl mx-auto" style={{ borderColor: '#334155' }}>
+      <section className="relative z-10 px-6 pt-10 pb-16 border-b max-w-6xl mx-auto" style={{ borderColor: '#E5E5E5' }}>
 
         {/* Network + wallet badges */}
         <div className="hero-element mb-8 flex flex-wrap items-center gap-2">
           <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm"
-            style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.25)', color: '#A78BFA' }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold"
+            style={{ background: '#F3F4F6', border: '1px solid #E5E5E5', color: '#000000' }}
           >
             <Sparkles size={13} />
             {networkName}
           </span>
           <span
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm font-mono"
-            style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', color: '#F59E0B' }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold font-mono"
+            style={{ background: '#F3F4F6', border: '1px solid #E5E5E5', color: '#000000' }}
           >
             <Wallet size={13} />
             {shortAddress}
@@ -225,14 +219,14 @@ const Profile = () => {
           {userProfile?.isRegistered ? (
             <span
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold"
-              style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}
+              style={{ background: '#F3F4F6', border: '1px solid #E5E5E5', color: '#000000' }}
             >
               <ShieldCheck size={13} /> Verified
             </span>
           ) : (
             <span
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold"
-              style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.25)', color: '#FBBF24' }}
+              style={{ background: '#F3F4F6', border: '1px solid #E5E5E5', color: '#000000' }}
             >
               <ShieldCheck size={13} /> Pending Registration
             </span>
@@ -242,29 +236,22 @@ const Profile = () => {
         {/* Profile card */}
         <div
           className="hero-element flex flex-col md:flex-row items-center gap-8 p-8 rounded-3xl relative overflow-hidden"
-          style={{ background: 'rgba(39,47,66,0.5)', border: '1px solid #334155', backdropFilter: 'blur(24px)' }}
+          style={{ background: '#F9FAFB', border: '1px solid #E5E5E5', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}
         >
-          {/* Subtle top shimmer line */}
-          <div className="absolute top-0 left-0 right-0 h-[1px]"
-            style={{ background: 'linear-gradient(90deg, transparent, rgba(245,158,11,0.4), transparent)' }} />
-
-          {/* Avatar */}
+          {/* Avatar (B&W Founder portrait) */}
           <div className="relative flex-shrink-0">
-            <div
-              className="w-24 h-24 rounded-2xl flex items-center justify-center text-3xl font-extrabold shadow-lg"
+            <img
+              src={founderAvatar}
+              alt={userProfile?.ensName || 'Founder'}
+              className="w-24 h-24 rounded-2xl object-cover border border-[#E5E5E5] shadow-sm"
               style={{
-                background: 'linear-gradient(135deg, #F59E0B 0%, #8B5CF6 100%)',
-                boxShadow: '0 0 32px rgba(245,158,11,0.25)',
-                fontFamily: "'Orbitron', monospace",
-                color: '#0F172A'
+                filter: 'grayscale(100%) contrast(110%)'
               }}
-            >
-              {userProfile?.ensName?.charAt(0)?.toUpperCase() || address?.charAt(2)?.toUpperCase() || 'U'}
-            </div>
+            />
             {/* Online dot */}
             <span
               className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2"
-              style={{ background: '#10B981', borderColor: '#0F172A' }}
+              style={{ background: '#000000', borderColor: '#FFFFFF' }}
             />
           </div>
 
@@ -272,35 +259,34 @@ const Profile = () => {
           <div className="flex-grow text-center md:text-left">
             <h1
               className="text-2xl md:text-3xl font-extrabold mb-1"
-              style={{ fontFamily: "'Orbitron', monospace", color: '#F8FAFC' }}
+              style={{ color: '#000000', letterSpacing: '-0.03em' }}
             >
               {userProfile?.ensName || 'No ENS Profile'}
             </h1>
-            <p className="text-xs font-mono mb-5" style={{ color: '#64748B' }}>{address}</p>
+            <p className="text-xs font-mono mb-5" style={{ color: '#6B7280' }}>{address}</p>
 
             {/* Reputation progress */}
             <div className="w-full max-w-md">
               <div className="flex justify-between text-xs font-bold mb-2">
-                <span style={{ color: currentLevel.color }}>{currentLevel.level}</span>
-                <span style={{ color: '#94A3B8' }}>{displayScore} / 1000 pts</span>
+                <span style={{ color: '#000000' }}>{currentLevel.level}</span>
+                <span style={{ color: '#6B7280' }}>{displayScore} / 1000 pts</span>
               </div>
               <div
                 className="h-2.5 w-full rounded-full overflow-hidden relative"
-                style={{ background: '#272F42' }}
+                style={{ background: '#E5E7EB' }}
               >
                 <div
                   className="progress-bar h-full rounded-full relative overflow-hidden"
                   style={{
                     width: `${progressPercent}%`,
-                    background: `linear-gradient(90deg, #F59E0B, #8B5CF6)`,
-                    boxShadow: `0 0 12px rgba(245,158,11,0.5)`
+                    background: '#000000'
                   }}
                 >
                   {/* Shimmer animation */}
                   <div
-                    className="absolute inset-0 opacity-60"
+                    className="absolute inset-0 opacity-20"
                     style={{
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)',
+                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%)',
                       animation: 'shimmer 2s infinite'
                     }}
                   />
@@ -315,13 +301,12 @@ const Profile = () => {
               onClick={() => setIsEditing(true)}
               className="flex items-center justify-center gap-2 px-6 py-3 rounded-full font-bold text-sm transition-all duration-200 cursor-pointer"
               style={{
-                background: isEditing ? 'rgba(139,92,246,0.15)' : '#8B5CF6',
+                background: '#000000',
                 color: '#FFFFFF',
-                border: '1px solid rgba(139,92,246,0.4)',
-                boxShadow: '0 0 20px rgba(139,92,246,0.25)'
+                border: '1px solid #000000'
               }}
-              onMouseEnter={e => { e.currentTarget.style.opacity = '0.9'; e.currentTarget.style.transform = 'translateY(-1px)' }}
-              onMouseLeave={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.transform = 'translateY(0)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#222222' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#000000' }}
             >
               <Edit3 size={16} />
               Edit Profile
@@ -341,17 +326,12 @@ const Profile = () => {
           {/* Personal Information Card */}
           <section
             className="stagger-item rounded-3xl p-8 relative overflow-hidden transition-all duration-300"
-            style={{ background: 'rgba(39,47,66,0.4)', border: '1px solid #334155', backdropFilter: 'blur(16px)' }}
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
           >
-            <div
-              className="absolute top-0 right-0 w-48 h-48 rounded-full pointer-events-none opacity-30"
-              style={{ background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)' }}
-            />
-
             <div className="flex justify-between items-center mb-8">
               <h2
                 className="text-xl font-bold"
-                style={{ fontFamily: "'Orbitron', monospace", color: '#F8FAFC' }}
+                style={{ color: '#000000', letterSpacing: '-0.02em' }}
               >
                 Personal Information
               </h2>
@@ -360,18 +340,14 @@ const Profile = () => {
                   <button
                     onClick={handleSaveProfile}
                     className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer"
-                    style={{ background: '#8B5CF6', color: '#FFFFFF' }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.9' }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+                    style={{ background: '#000000', color: '#FFFFFF' }}
                   >
                     <Save size={14} /> Save
                   </button>
                   <button
                     onClick={() => setIsEditing(false)}
                     className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer"
-                    style={{ background: 'rgba(245,158,11,0.1)', color: '#F59E0B', border: '1px solid rgba(245,158,11,0.3)' }}
-                    onMouseEnter={e => { e.currentTarget.style.opacity = '0.8' }}
-                    onMouseLeave={e => { e.currentTarget.style.opacity = '1' }}
+                    style={{ background: '#FFFFFF', color: '#000000', border: '1px solid #E5E5E5' }}
                   >
                     <X size={14} /> Cancel
                   </button>
@@ -381,7 +357,7 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-bold mb-2" style={{ color: '#94A3B8' }}>Primary ENS</label>
+                <label className="block text-xs font-bold mb-2" style={{ color: '#6B7280' }}>Primary ENS</label>
                 {isEditing ? (
                   <input
                     value={profileData.ensName}
@@ -389,17 +365,17 @@ const Profile = () => {
                     className="w-full px-4 py-3 rounded-xl text-sm font-mono transition-all duration-200 outline-none"
                     placeholder="name.eth"
                     style={{
-                      background: '#0F172A',
-                      border: '1px solid #334155',
-                      color: '#F8FAFC'
+                      background: '#FFFFFF',
+                      border: '1px solid #D1D5DB',
+                      color: '#000000'
                     }}
-                    onFocus={e => { e.target.style.borderColor = '#F59E0B'; e.target.style.boxShadow = '0 0 0 3px rgba(245,158,11,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#334155'; e.target.style.boxShadow = 'none' }}
+                    onFocus={e => { e.target.style.borderColor = '#000000' }}
+                    onBlur={e => { e.target.style.borderColor = '#D1D5DB' }}
                   />
                 ) : (
                   <div
                     className="px-4 py-3 rounded-xl text-sm font-mono"
-                    style={{ background: '#0F172A', border: '1px solid #272F42', color: '#94A3B8' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#000000' }}
                   >
                     {userProfile?.ensName || 'Not configured'}
                   </div>
@@ -407,7 +383,7 @@ const Profile = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold mb-2" style={{ color: '#94A3B8' }}>
+                <label className="block text-xs font-bold mb-2" style={{ color: '#6B7280' }}>
                   <span className="flex items-center gap-1.5"><Twitter size={12} /> Twitter / X</span>
                 </label>
                 {isEditing ? (
@@ -416,14 +392,14 @@ const Profile = () => {
                     onChange={e => handleChangeSocial('twitter', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none"
                     placeholder="https://twitter.com/..."
-                    style={{ background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC' }}
-                    onFocus={e => { e.target.style.borderColor = '#F59E0B'; e.target.style.boxShadow = '0 0 0 3px rgba(245,158,11,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#334155'; e.target.style.boxShadow = 'none' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#000000' }}
+                    onFocus={e => { e.target.style.borderColor = '#000000' }}
+                    onBlur={e => { e.target.style.borderColor = '#D1D5DB' }}
                   />
                 ) : (
                   <div
                     className="px-4 py-3 rounded-xl text-sm"
-                    style={{ background: '#0F172A', border: '1px solid #272F42', color: '#94A3B8' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#000000' }}
                   >
                     {profileData.socialLinks.twitter || 'Not connected'}
                   </div>
@@ -431,7 +407,7 @@ const Profile = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold mb-2" style={{ color: '#94A3B8' }}>
+                <label className="block text-xs font-bold mb-2" style={{ color: '#6B7280' }}>
                   <span className="flex items-center gap-1.5"><Globe size={12} /> Website</span>
                 </label>
                 {isEditing ? (
@@ -440,14 +416,14 @@ const Profile = () => {
                     onChange={e => handleChangeSocial('website', e.target.value)}
                     className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none"
                     placeholder="https://..."
-                    style={{ background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC' }}
-                    onFocus={e => { e.target.style.borderColor = '#F59E0B'; e.target.style.boxShadow = '0 0 0 3px rgba(245,158,11,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#334155'; e.target.style.boxShadow = 'none' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#000000' }}
+                    onFocus={e => { e.target.style.borderColor = '#000000' }}
+                    onBlur={e => { e.target.style.borderColor = '#D1D5DB' }}
                   />
                 ) : (
                   <div
                     className="px-4 py-3 rounded-xl text-sm"
-                    style={{ background: '#0F172A', border: '1px solid #272F42', color: '#94A3B8' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#000000' }}
                   >
                     {profileData.socialLinks.website || 'Not configured'}
                   </div>
@@ -455,7 +431,7 @@ const Profile = () => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-xs font-bold mb-2" style={{ color: '#94A3B8' }}>Biography</label>
+                <label className="block text-xs font-bold mb-2" style={{ color: '#6B7280' }}>Biography</label>
                 {isEditing ? (
                   <textarea
                     value={profileData.description}
@@ -463,14 +439,14 @@ const Profile = () => {
                     rows={4}
                     className="w-full px-4 py-3 rounded-xl text-sm transition-all duration-200 outline-none resize-none"
                     placeholder="Share your story..."
-                    style={{ background: '#0F172A', border: '1px solid #334155', color: '#F8FAFC' }}
-                    onFocus={e => { e.target.style.borderColor = '#F59E0B'; e.target.style.boxShadow = '0 0 0 3px rgba(245,158,11,0.15)' }}
-                    onBlur={e => { e.target.style.borderColor = '#334155'; e.target.style.boxShadow = 'none' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #D1D5DB', color: '#000000' }}
+                    onFocus={e => { e.target.style.borderColor = '#000000' }}
+                    onBlur={e => { e.target.style.borderColor = '#D1D5DB' }}
                   />
                 ) : (
                   <div
                     className="px-4 py-3 rounded-xl text-sm min-h-[100px] whitespace-pre-wrap"
-                    style={{ background: '#0F172A', border: '1px solid #272F42', color: '#94A3B8' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#374151' }}
                   >
                     {profileData.description || 'No biography added yet.'}
                   </div>
@@ -479,25 +455,56 @@ const Profile = () => {
             </div>
           </section>
 
+          {/* ── SECTION: ON-CHAIN REPUTATION EXPLANATION ── */}
+          <section
+            className="stagger-item rounded-3xl p-8 relative overflow-hidden transition-all duration-300 animate-section"
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
+          >
+            <h2
+              className="text-xl font-bold mb-4 flex items-center gap-2"
+              style={{ color: '#000000', letterSpacing: '-0.02em' }}
+            >
+              <ShieldCheck size={22} />
+              On-Chain Reputation
+            </h2>
+            <p className="text-sm text-gray-600 mb-6 leading-relaxed">
+              Unlike traditional credit scores managed by centralized agencies, your creditworthiness and reputation are completely <strong>sovereign, decentralized, and verifiable on-chain</strong>. It operates as a dynamic cryptographic metric representing your reliability in this peer-to-peer ecosystem.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E5E5E5' }}>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">How it is calculated</h3>
+                <ul className="text-xs space-y-2 text-gray-600" style={{ paddingLeft: '5px' }}>
+                  <li>• Volume and frequency of verified transfers</li>
+                  <li>• History of early/on-time repayments</li>
+                  <li>• Longevity of the active on-chain address</li>
+                  <li>• Social endorsements and backing relationships</li>
+                </ul>
+              </div>
+
+              <div style={{ background: '#FFFFFF', padding: '16px', borderRadius: '16px', border: '1px solid #E5E5E5' }}>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Technical Execution</h3>
+                <p className="text-xs text-gray-700 leading-relaxed">
+                  Your profile operates via a <strong>Reputation NFT</strong>. The mathematical calculations are performed on-chain using <strong>Arbitrum Stylus Smart Contracts</strong> written in Rust/Wasm, allowing gas-free scaling and transparent verification.
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* Reputation System Card */}
           <section
             className="stagger-item rounded-3xl p-8 relative overflow-hidden transition-all duration-300"
-            style={{ background: 'rgba(39,47,66,0.4)', border: '1px solid #334155', backdropFilter: 'blur(16px)' }}
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
           >
-            <div
-              className="absolute -top-8 -right-8 w-40 h-40 rounded-full pointer-events-none"
-              style={{ background: 'radial-gradient(circle, rgba(245,158,11,0.08) 0%, transparent 70%)' }}
-            />
-
             <div className="flex justify-between items-start mb-8">
               <div>
                 <h2
                   className="text-xl font-bold mb-2"
-                  style={{ fontFamily: "'Orbitron', monospace", color: '#F8FAFC' }}
+                  style={{ color: '#000000', letterSpacing: '-0.02em' }}
                 >
                   Reputation System
                 </h2>
-                <p className="text-xs leading-relaxed max-w-md" style={{ color: '#64748B' }}>
+                <p className="text-xs leading-relaxed max-w-md" style={{ color: '#6B7280' }}>
                   Your score updates with every payment, loan, and community participation on the network.
                 </p>
               </div>
@@ -505,12 +512,12 @@ const Profile = () => {
                 onClick={handleBumpReputation}
                 className="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer"
                 style={{
-                  background: 'rgba(245,158,11,0.1)',
-                  border: '1px solid rgba(245,158,11,0.3)',
-                  color: '#F59E0B'
+                  background: '#FFFFFF',
+                  border: '1px solid #E5E5E5',
+                  color: '#000000'
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.2)' }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(245,158,11,0.1)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F3F4F6' }}
+                onMouseLeave={e => { e.currentTarget.style.background = '#FFFFFF' }}
               >
                 <Star size={13} />
                 +5 Pts (Demo)
@@ -526,10 +533,9 @@ const Profile = () => {
                     key={i}
                     className="text-center py-2.5 px-2 rounded-xl text-xs font-bold transition-all duration-200"
                     style={{
-                      background: isActive ? `${level.color}18` : 'rgba(15,23,42,0.5)',
-                      border: `1px solid ${isActive ? level.color : '#334155'}`,
-                      color: isActive ? level.color : '#64748B',
-                      boxShadow: isActive ? `0 0 16px ${level.glow}` : 'none'
+                      background: isActive ? '#000000' : '#FFFFFF',
+                      border: `1px solid ${isActive ? '#000000' : '#E5E5E5'}`,
+                      color: isActive ? '#FFFFFF' : '#9CA3AF'
                     }}
                   >
                     {level.level}
@@ -541,11 +547,11 @@ const Profile = () => {
             {/* Active benefits */}
             <div
               className="rounded-2xl p-6"
-              style={{ background: '#0F172A', border: '1px solid #272F42' }}
+              style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}
             >
               <h4
                 className="text-sm font-bold mb-4 flex items-center gap-2"
-                style={{ color: '#F59E0B', fontFamily: "'Orbitron', monospace" }}
+                style={{ color: '#000000' }}
               >
                 <Star size={15} />
                 Active Benefits — {currentLevel.level}
@@ -555,11 +561,11 @@ const Profile = () => {
                   <li
                     key={i}
                     className="flex items-center gap-3 text-xs px-4 py-2.5 rounded-xl"
-                    style={{ background: 'rgba(39,47,66,0.6)', border: '1px solid #334155', color: '#CBD5E1' }}
+                    style={{ background: '#F9FAFB', border: '1px solid #E5E5E5', color: '#000000' }}
                   >
                     <span
                       className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ background: currentLevel.color, boxShadow: `0 0 6px ${currentLevel.glow}` }}
+                      style={{ background: '#000000' }}
                     />
                     {benefit}
                   </li>
@@ -575,11 +581,11 @@ const Profile = () => {
           {/* Stats Grid */}
           <section
             className="stagger-item rounded-3xl p-6 relative overflow-hidden"
-            style={{ background: 'rgba(39,47,66,0.4)', border: '1px solid #334155', backdropFilter: 'blur(16px)' }}
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
           >
             <h2
               className="text-sm font-bold mb-5"
-              style={{ fontFamily: "'Orbitron', monospace", color: '#F59E0B' }}
+              style={{ color: '#000000' }}
             >
               Personal Stats
             </h2>
@@ -590,18 +596,18 @@ const Profile = () => {
                   <div
                     key={i}
                     className="p-4 rounded-2xl relative overflow-hidden transition-all duration-300"
-                    style={{ background: '#0F172A', border: '1px solid #334155' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#F59E0B'; e.currentTarget.style.boxShadow = '0 0 16px rgba(245,158,11,0.1)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.boxShadow = 'none' }}
+                    style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = '#000000' }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E5E5' }}
                   >
                     <div
                       className="w-8 h-8 rounded-lg flex items-center justify-center mb-3"
-                      style={{ background: `linear-gradient(135deg, ${stat.color.replace('from-', '').split(' ')[0]}, ${stat.color.replace('to-', '').split(' ').pop()})`.replace(/\[|\]/g, '') }}
+                      style={{ background: '#F3F4F6' }}
                     >
-                      <Icon size={15} style={{ color: '#0F172A' }} />
+                      <Icon size={15} style={{ color: '#000000' }} />
                     </div>
-                    <p className="text-[10px] font-bold mb-1 uppercase tracking-wide" style={{ color: '#64748B' }}>{stat.label}</p>
-                    <p className="text-lg font-extrabold font-mono" style={{ color: '#F8FAFC' }}>{stat.value}</p>
+                    <p className="text-[10px] font-bold mb-1 uppercase tracking-wide" style={{ color: '#6B7280' }}>{stat.label}</p>
+                    <p className="text-lg font-extrabold font-mono" style={{ color: '#000000' }}>{stat.value}</p>
                   </div>
                 )
               })}
@@ -611,11 +617,11 @@ const Profile = () => {
           {/* Preferences */}
           <section
             className="stagger-item rounded-3xl p-6 relative overflow-hidden"
-            style={{ background: 'rgba(39,47,66,0.4)', border: '1px solid #334155', backdropFilter: 'blur(16px)' }}
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
           >
             <h2
               className="text-sm font-bold mb-5"
-              style={{ fontFamily: "'Orbitron', monospace", color: '#8B5CF6' }}
+              style={{ color: '#000000' }}
             >
               Preferences
             </h2>
@@ -627,8 +633,8 @@ const Profile = () => {
               ].map((pref, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-bold" style={{ color: '#F8FAFC' }}>{pref.label}</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#64748B' }}>{pref.desc}</p>
+                    <p className="text-sm font-bold" style={{ color: '#000000' }}>{pref.label}</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#6B7280' }}>{pref.desc}</p>
                   </div>
                   <Switch checked={pref.defaultOn} />
                 </div>
@@ -639,39 +645,38 @@ const Profile = () => {
           {/* Network info */}
           <section
             className="stagger-item rounded-3xl p-6 relative overflow-hidden"
-            style={{ background: 'rgba(39,47,66,0.4)', border: '1px solid #334155', backdropFilter: 'blur(16px)' }}
+            style={{ background: '#F9FAFB', border: '1px solid #E5E5E5' }}
           >
             <h2
               className="text-sm font-bold mb-4"
-              style={{ fontFamily: "'Orbitron', monospace", color: '#94A3B8' }}
+              style={{ color: '#000000' }}
             >
               Network
             </h2>
             <div className="space-y-3">
               <div className="flex items-center justify-between text-xs">
-                <span style={{ color: '#64748B' }}>Chain</span>
-                <span className="font-mono font-bold" style={{ color: '#F59E0B' }}>{networkName}</span>
+                <span style={{ color: '#6B7280' }}>Chain</span>
+                <span className="font-mono font-bold" style={{ color: '#000000' }}>{networkName}</span>
               </div>
               <div
                 className="h-px w-full"
-                style={{ background: '#272F42' }}
+                style={{ background: '#E5E5E5' }}
               />
               <div className="flex items-center justify-between text-xs">
-                <span style={{ color: '#64748B' }}>Address</span>
-                <span className="font-mono font-bold" style={{ color: '#A78BFA' }}>{shortAddress}</span>
+                <span style={{ color: '#6B7280' }}>Address</span>
+                <span className="font-mono font-bold" style={{ color: '#000000' }}>{shortAddress}</span>
               </div>
               <div
                 className="h-px w-full"
-                style={{ background: '#272F42' }}
+                style={{ background: '#E5E5E5' }}
               />
               <div className="flex items-center justify-between text-xs">
-                <span style={{ color: '#64748B' }}>Level</span>
+                <span style={{ color: '#6B7280' }}>Level</span>
                 <span
                   className="font-bold px-2 py-0.5 rounded-md text-[10px]"
                   style={{
-                    background: `${currentLevel.color}18`,
-                    color: currentLevel.color,
-                    border: `1px solid ${currentLevel.color}40`
+                    background: '#000000',
+                    color: '#FFFFFF'
                   }}
                 >
                   {currentLevel.level}

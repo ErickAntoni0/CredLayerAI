@@ -5,14 +5,10 @@ import {
   CreditCard,
   Landmark,
   User,
-  Users,
   Home,
-  ArrowLeftRight,
   Menu,
   X,
-  Wallet,
-  Sparkles,
-  Brain
+  Wallet
 } from 'lucide-react'
 import { useTrustScore } from '../hooks/useCredLayer'
 import { SEPOLIA_CHAIN_ID, ARBITRUM_SEPOLIA_CHAIN_ID } from '../config/chains'
@@ -43,7 +39,6 @@ const Layout = () => {
       { path: '/landing/index.html', label: 'Home', icon: Home },
       { path: '/payments', label: 'Payments', icon: CreditCard },
       { path: '/loans', label: 'Loans', icon: Landmark },
-      { path: '/nova', label: 'NOVA | IA', icon: Brain },
       { path: '/profile', label: 'Profile', icon: User }
     ],
     []

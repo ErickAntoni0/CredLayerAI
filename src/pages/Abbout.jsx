@@ -15,6 +15,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lenis from 'lenis'
 
 import '../styles/about.css'
+import founderAvatar from '../assets/founder_avatar.png'
+import trustVideo from '../assets/video1.mp4'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -183,12 +185,11 @@ const AboutUs = () => {
                                 <div className="flex flex-col gap-6">
                                     {teamMembers.map((m) => (
                                         <div key={m.initials} className="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 border border-zinc-100 transition-all hover:border-zinc-300 hover:bg-zinc-100/80">
-                                            <div className={`w-14 h-14 rounded-full flex items-center justify-center font-black text-lg ${m.color === 'purple' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                                                m.color === 'teal' ? 'bg-teal-100 text-teal-700 border border-teal-200' :
-                                                    'bg-red-100 text-red-700 border border-red-200'
-                                                }`}>
-                                                {m.initials}
-                                            </div>
+                                            <img
+                                                src={founderAvatar}
+                                                alt={m.name}
+                                                className="w-14 h-14 rounded-full object-cover border border-zinc-200 grayscale contrast-110"
+                                            />
                                             <div className="flex-grow">
                                                 <strong className="text-lg font-bold text-zinc-900 block">{m.name}</strong>
                                                 <span className="text-sm font-medium text-zinc-500 block">{m.role}</span>
@@ -354,12 +355,11 @@ const AboutUs = () => {
                             {teamMembers.map((m) => (
                                 <article key={m.initials} className="stagger-item-3 bg-white border border-zinc-200 rounded-[28px] p-10 transition-all hover:shadow-xl hover:border-black flex flex-col justify-between">
                                     <div>
-                                        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center font-black text-2xl mb-8 ${m.color === 'purple' ? 'bg-purple-100 text-purple-700 border border-purple-200' :
-                                            m.color === 'teal' ? 'bg-teal-100 text-teal-700 border border-teal-200' :
-                                                'bg-red-100 text-red-700 border border-red-200'
-                                            }`}>
-                                            {m.initials}
-                                        </div>
+                                        <img
+                                            src={founderAvatar}
+                                            alt={m.name}
+                                            className="w-16 h-16 rounded-2xl object-cover border border-zinc-200 grayscale contrast-110 mb-8"
+                                        />
                                         <strong className="text-2xl font-bold text-black block mb-1">{m.name}</strong>
                                         <span className="text-zinc-500 font-medium text-base block mb-6">{m.role}</span>
                                         <div className="flex flex-wrap gap-2">
@@ -370,6 +370,81 @@ const AboutUs = () => {
                                     </div>
                                 </article>
                             ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* ── Trust On-Chain & Video Pitch Section ── */}
+                <section className="py-32 bg-black text-white border-t border-zinc-900">
+                    <div className="marketing-container flex flex-col lg:flex-row items-center gap-16">
+                        <div className="flex flex-col items-start lg:w-1/2">
+                            <span className="mb-6 inline-flex items-center gap-2 rounded-full bg-zinc-800 px-4 py-1.5 text-sm font-semibold text-zinc-300 border border-zinc-700">
+                                Pitch &amp; Demonstration
+                            </span>
+                            <h2 className="text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                                How Trust Works On-Chain
+                            </h2>
+                            <p className="text-lg text-zinc-400 mb-6 leading-relaxed">
+                                Our protocol introduces the concept of sovereign, portable financial reputation. By linking payments directly to Arbitrum Stylus smart contracts, we compute trust scores without intermediaries.
+                            </p>
+                            <div className="space-y-6">
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center flex-shrink-0 text-white font-bold border border-zinc-800 text-sm">1</div>
+                                    <div>
+                                        <h4 className="font-bold text-white">Arbitrum Stylus Wasm Logic</h4>
+                                        <p className="text-sm text-zinc-400">Calculates reputation score using high-performance Rust logic compiled directly to WASM.</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-start gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-zinc-900 flex items-center justify-center flex-shrink-0 text-white font-bold border border-zinc-800 text-sm">2</div>
+                                    <div>
+                                        <h4 className="font-bold text-white">Scroll L2 Scaling</h4>
+                                        <p className="text-sm text-zinc-400">Stores zero-knowledge proofs and state updates efficiently, keeping gas fees near zero for local cooperatives.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Video player box */}
+                        <div className="lg:w-1/2 w-full">
+                            <div className="relative border border-zinc-800 rounded-[32px] overflow-hidden bg-zinc-950 shadow-2xl">
+                                <video 
+                                    src={trustVideo}
+                                    controls 
+                                    className="w-full h-auto aspect-video rounded-[32px]"
+                                    style={{ display: 'block' }}
+                                />
+                                <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-white border border-zinc-800/50">
+                                    Trust Protocol Demo
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* ── Technology Stack ── */}
+                <section className="py-24 bg-white border-t border-zinc-100">
+                    <div className="marketing-container text-center">
+                        <span className="text-xs font-bold uppercase tracking-widest text-zinc-400 block mb-3">Protocol Architecture</span>
+                        <h2 className="text-3xl lg:text-4xl font-extrabold text-black mb-12">Built on Next-Gen Web3 Infrastructure</h2>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div className="p-8 rounded-[24px] border border-zinc-200 bg-zinc-50 hover:border-black transition-all text-left">
+                                <strong className="text-xl font-bold text-black block mb-2">Arbitrum Stylus</strong>
+                                <p className="text-xs text-zinc-500 leading-relaxed">Rust &amp; WebAssembly execution environment for high-performance, cost-effective on-chain rating logic.</p>
+                            </div>
+                            <div className="p-8 rounded-[24px] border border-zinc-200 bg-zinc-50 hover:border-black transition-all text-left">
+                                <strong className="text-xl font-bold text-black block mb-2">Scroll L2</strong>
+                                <p className="text-xs text-zinc-500 leading-relaxed">EVM-equivalent zk-Rollup scaling platform, ensuring transaction privacy and network finality.</p>
+                            </div>
+                            <div className="p-8 rounded-[24px] border border-zinc-200 bg-zinc-50 hover:border-black transition-all text-left">
+                                <strong className="text-xl font-bold text-black block mb-2">Ethereum Sepolia</strong>
+                                <p className="text-xs text-zinc-500 leading-relaxed">Active testbed validation for smart contract registry and loan contract minting parameters.</p>
+                            </div>
+                            <div className="p-8 rounded-[24px] border border-zinc-200 bg-zinc-50 hover:border-black transition-all text-left">
+                                <strong className="text-xl font-bold text-black block mb-2">ENS Identity</strong>
+                                <p className="text-xs text-zinc-500 leading-relaxed">Domain resolutions for transparent wallet routing and regional subdomains for users.</p>
+                            </div>
                         </div>
                     </div>
                 </section>

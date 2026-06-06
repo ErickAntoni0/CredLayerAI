@@ -20,7 +20,9 @@ import {
   HelpCircle,
   TrendingUp,
   Percent,
-  LayoutDashboard
+  LayoutDashboard,
+  Shield,
+  RefreshCw
 } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { ethers } from 'ethers'
@@ -37,6 +39,15 @@ const MXNB_ADDRESS = '0xf197ffc28c23e0309b5559e7a166f2c6164c80aa'
 const MXNB_REPAY_POOL = '0x000000000000000000000000000000000000dEaD'
 
 gsap.registerPlugin(ScrollTrigger)
+
+// Arbitrum SVG logo (inline, no external dep)
+const ArbitrumIcon = ({ size = 14 }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="16" cy="16" r="16" fill="#2D374B"/>
+    <path d="M16 6L8 24h4.5l1.5-3.5 4.5-11L20.5 24H25L16 6z" fill="#28A0F0"/>
+    <path d="M11 16.5l-3 7.5H12l2-5-3-2.5z" fill="#96BEDC"/>
+  </svg>
+)
 
 const SPONSORS = [
   { name: 'alicia.eth', amount: '250 USDC', tier: 'Gold Sponsor', date: 'Just now' },
@@ -55,6 +66,35 @@ const Loans = () => {
 
   // Balance MXNB
   const [mxnbBalance, setMxnbBalance] = useState('0.00')
+
+  // Bitso Simulator States
+  const [bitsoRate, setBitsoRate] = useState(17.8)
+  const [bitsoLoading, setBitsoLoading] = useState(true)
+  const [simAmount, setSimAmount] = useState('100')
+  const [simDirection, setSimDirection] = useState('MXN_TO_USDC') // MXN_TO_USDC or USDC_TO_MXN
+
+  useEffect(() => {
+    const fetchBitsoRate = async () => {
+      try {
+        const res = await fetch('https://api.bitso.com/v3/ticker/?book=usd_mxn', {
+          headers: { 'Accept': 'application/json' }
+        })
+        if (res.ok) {
+          const json = await res.json()
+          if (json.success && json.payload?.last) {
+            setBitsoRate(parseFloat(json.payload.last))
+          }
+        }
+      } catch (_) {
+        // Fallback
+      } finally {
+        setBitsoLoading(false)
+      }
+    }
+    fetchBitsoRate()
+    const interval = setInterval(fetchBitsoRate, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     if (!address) {
@@ -424,8 +464,9 @@ const Loans = () => {
       {/* Stats aggregados */}
       <section className="loans-stats">
         <article className="loan-stat-card loan-stat-card--mxnb">
-          <span className="loan-stat-label loan-stat-label--mxnb">
+          <span className="loan-stat-label loan-stat-label--mxnb" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <span className="loan-stat-dot"></span>
+            <ArbitrumIcon size={13} />
             MXNB Balance
           </span>
           <strong className="loan-stat-value loan-stat-value--mxnb">{Number(mxnbBalance).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</strong>
@@ -581,6 +622,26 @@ const Loans = () => {
                   />
                   <span style={{ fontSize: '0.9rem', fontWeight: 'bold' }}>%</span>
                 </div>
+                
+                <div style={{
+                  marginTop: '12px',
+                  padding: '14px',
+                  background: 'rgba(59, 130, 246, 0.04)',
+                  border: '1px solid rgba(59, 130, 246, 0.15)',
+                  borderRadius: '12px',
+                  fontSize: '0.78rem',
+                  color: '#27272a',
+                  lineHeight: '1.45'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px', fontWeight: '700', color: '#1d4ed8' }}>
+                    <Shield size={14} style={{ flexShrink: 0 }} />
+                    <span>Trust Score On-Chain (Arbitrum Stylus)</span>
+                  </div>
+                  <p style={{ margin: 0, color: '#4b5563' }}>
+                    Your interest rate is dynamically linked to your <strong>immutable, on-chain Trust Score</strong> calculated on Arbitrum Stylus. 
+                    This is a verifiable reputation record, not a banking credit score. High reputation unlocks lower interest rates (down to 1.0% APR) and higher loan amounts.
+                  </p>
+                </div>
               </div>
 
               <div style={{ background: '#fafafa', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px dashed #e4e4e7' }}>
@@ -606,54 +667,152 @@ const Loans = () => {
             </form>
           </div>
 
-          {/* Interactive 3D NFT Card Preview */}
-          <div className="nft-preview-wrapper">
-            <span className="nft-preview-label">3D Preview of Credit NFT</span>
+          {/* Interactive 3D NFT Card Preview & Bitso Simulator */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <div className="nft-preview-wrapper" style={{ minHeight: '440px', padding: '2.5rem 2rem' }}>
+              <span className="nft-preview-label">3D Preview of Credit NFT</span>
 
-            <div className="nft-scene">
-              <div
-                ref={cardRef}
-                className="nft-card-3d state-pending"
-                onMouseMove={handleMouseMove}
-                onMouseLeave={handleMouseLeave}
-                style={{
-                  transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
-                }}
-              >
-                <div className="nft-card-inner">
-                  {/* Glare overlay */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: 0, left: 0, right: 0, bottom: 0,
-                      background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,0.08) 0%, transparent 50%)`,
-                      pointerEvents: 'none',
-                      zIndex: 3
-                    }}
-                  />
+              <div className="nft-scene">
+                <div
+                  ref={cardRef}
+                  className="nft-card-3d state-pending"
+                  onMouseMove={handleMouseMove}
+                  onMouseLeave={handleMouseLeave}
+                  style={{
+                    transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+                  }}
+                >
+                  <div className="nft-card-inner">
+                    {/* Glare overlay */}
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0, left: 0, right: 0, bottom: 0,
+                        background: `radial-gradient(circle at ${glarePosition.x}% ${glarePosition.y}%, rgba(255,255,255,0.08) 0%, transparent 50%)`,
+                        pointerEvents: 'none',
+                        zIndex: 3
+                      }}
+                    />
 
-                  <div className="nft-header">
-                    <span className="nft-brand">CredLayer NFT</span>
-                    <span className="nft-tag-chip">Pending</span>
-                  </div>
-
-                  <div className="nft-body">
-                    <div className="nft-amount">${parseFloat(amount || '0').toLocaleString()} USDC</div>
-                    <div className="nft-rate">{interest}% APR · {duration} Days</div>
-                    <p className="nft-purpose">{purpose || 'No purpose specified...'}</p>
-                  </div>
-
-                  <div className="nft-footer">
-                    <div className="nft-wallet">
-                      <span className="nft-wallet-label">Borrower</span>
-                      <span className="nft-wallet-addr">{shortAddr}</span>
+                    <div className="nft-header">
+                      <span className="nft-brand">CredLayer NFT</span>
+                      <span className="nft-tag-chip">Pending</span>
                     </div>
-                    <div className="nft-badge-meta">
-                      <span className="nft-badge-score">{reputationScore || 300} PTS</span>
-                      <span className="nft-badge-sub">Reputation</span>
+
+                    <div className="nft-body">
+                      <div className="nft-amount">${parseFloat(amount || '0').toLocaleString()} USDC</div>
+                      <div className="nft-rate">{interest}% APR · {duration} Days</div>
+                      <p className="nft-purpose">{purpose || 'No purpose specified...'}</p>
+                    </div>
+
+                    <div className="nft-footer">
+                      <div className="nft-wallet">
+                        <span className="nft-wallet-label">Borrower</span>
+                        <span className="nft-wallet-addr">{shortAddr}</span>
+                      </div>
+                      <div className="nft-badge-meta">
+                        <span className="nft-badge-score">{reputationScore || 300} PTS</span>
+                        <span className="nft-badge-sub">Reputation</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Bitso Rate Simulator Card */}
+            <div style={{
+              background: '#ffffff',
+              border: '1px solid rgba(0, 0, 0, 0.05)',
+              borderRadius: '24px',
+              padding: '2rem',
+              boxShadow: '0 10px 40px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{
+                    width: '24px', height: '24px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #00B15D, #00D67D)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <span style={{ color: '#fff', fontSize: '0.6rem', fontWeight: 900 }}>₿</span>
+                  </div>
+                  <h3 style={{ fontSize: '0.95rem', fontWeight: 800, margin: 0, color: '#0a0a0a' }}>Bitso Rate Simulator</h3>
+                </div>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#00B15D', background: 'rgba(0,177,93,0.08)', padding: '3px 8px', borderRadius: '8px' }}>
+                  Live API
+                </span>
+              </div>
+              
+              <p style={{ fontSize: '0.78rem', color: '#6b6b6b', margin: '0 0 1.25rem 0', lineHeight: 1.4 }}>
+                Simulate exchange rates between Mexican Pesos (MXN/MXNB) and USDC. Rates are fetched directly from Bitso.
+              </p>
+
+              <div style={{ background: '#f8f9fa', borderRadius: '14px', padding: '14px', border: '1px solid rgba(0,0,0,0.04)', marginBottom: '1.25rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#888', textTransform: 'uppercase' }}>
+                    {simDirection === 'MXN_TO_USDC' ? 'You Sell (MXN / MXNB)' : 'You Sell (USDC)'}
+                  </span>
+                  <button 
+                    type="button"
+                    onClick={() => setSimDirection(d => d === 'MXN_TO_USDC' ? 'USDC_TO_MXN' : 'MXN_TO_USDC')}
+                    style={{ background: 'transparent', border: 'none', color: '#3b82f6', fontSize: '0.68rem', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                  >
+                    Swap ⇆
+                  </button>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input
+                    type="number"
+                    value={simAmount}
+                    onChange={(e) => setSimAmount(e.target.value)}
+                    style={{
+                      flex: 1,
+                      background: 'transparent',
+                      border: 'none',
+                      fontSize: '1.1rem',
+                      fontWeight: 800,
+                      color: '#0a0a0a',
+                      outline: 'none',
+                      padding: 0
+                    }}
+                  />
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0a0a0a' }}>
+                    {simDirection === 'MXN_TO_USDC' ? 'MXN' : 'USDC'}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'center', margin: '-8px 0 8px 0', position: 'relative', zIndex: 2 }}>
+                <div style={{ background: '#ffffff', border: '1px solid rgba(0,0,0,0.08)', borderRadius: '50%', width: '28px', height: '28px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', boxShadow: '0 2px 6px rgba(0,0,0,0.05)' }}>
+                  ↓
+                </div>
+              </div>
+
+              <div style={{ background: '#f8f9fa', borderRadius: '14px', padding: '14px', border: '1px solid rgba(0,0,0,0.04)', marginBottom: '1.25rem' }}>
+                <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#888', textTransform: 'uppercase', display: 'block', marginBottom: '8px' }}>
+                  {simDirection === 'MXN_TO_USDC' ? 'You Receive (USDC)' : 'You Receive (MXN / MXNB stablecoin)'}
+                </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#00B15D' }}>
+                    {bitsoLoading ? '...' : 
+                      simDirection === 'MXN_TO_USDC' 
+                        ? (parseFloat(simAmount || '0') / bitsoRate).toFixed(2) 
+                        : (parseFloat(simAmount || '0') * bitsoRate).toFixed(2)
+                    }
+                  </span>
+                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0a0a0a' }}>
+                    {simDirection === 'MXN_TO_USDC' ? 'USDC' : 'MXNB'}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.68rem', color: '#888' }}>
+                <span>Rate: 1 USD = <strong>{bitsoRate.toFixed(2)} MXN</strong></span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <span style={{ width: '6px', height: '6px', background: '#00B15D', borderRadius: '50%', display: 'inline-block' }}></span>
+                  Bitso live ticker
+                </span>
               </div>
             </div>
           </div>
@@ -742,24 +901,24 @@ const Loans = () => {
           {/* LATAM Credit Impact Bento Banner */}
           <div className="latam-impact-banner">
             <div className="latam-impact-text">
-              <span className="latam-impact-tag">Impacto Regional</span>
-              <h3>Impulsando el crecimiento en América Latina</h3>
+              <span className="latam-impact-tag">Regional Impact</span>
+              <h3>Driving growth in Latin America</h3>
               <p>
-                Cada microcrédito financiado a través de CredLayer impulsa directamente a emprendedores locales a expandir sus negocios y evitar tasas de interés abusivas. Tu soporte financiero genera valor real y fortalece la resiliencia económica de la comunidad.
+                Each microloan funded through CredLayer directly empowers local entrepreneurs to expand their businesses and avoid abusive interest rates. Your financial support generates real value and strengthens the economic resilience of the community.
               </p>
               <div className="latam-impact-metrics">
                 <div className="latam-metric">
                   <strong>+320</strong>
-                  <span>Emprendedores</span>
+                  <span>Entrepreneurs</span>
                 </div>
                 <div className="latam-metric">
                   <strong>100%</strong>
-                  <span>Transparencia Web3</span>
+                  <span>Web3 Transparency</span>
                 </div>
               </div>
             </div>
             <div className="latam-impact-image-container">
-              <img src={latamImg} alt="Impacto Comunitario en LATAM" className="latam-impact-img" />
+              <img src={latamImg} alt="Community Impact in LATAM" className="latam-impact-img" />
               <div className="latam-impact-overlay"></div>
             </div>
           </div>
@@ -786,7 +945,7 @@ const Loans = () => {
                 <article key={loan.id} className={`my-loan-card status-${loan.status}`}>
                   <div className="my-card-header">
                     <span className="my-card-status">
-                      {loan.statusLabel || (loan.status === 'active' ? 'En Curso' : 'Liquidado')}
+                      {loan.statusLabel || (loan.status === 'active' ? 'In Progress' : 'Liquidated')}
                     </span>
                     <span className="my-loan-impact">{loan.reputationImpact}</span>
                   </div>

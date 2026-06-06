@@ -85,9 +85,55 @@ function AIAssistantChat() {
         className={`ai-chat-toggle ${isOpen ? 'ai-chat-toggle--active' : ''}`}
         onClick={() => setIsOpen(prev => !prev)}
         aria-expanded={isOpen}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '8px 18px',
+          borderRadius: '999px',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          background: isOpen ? '#000000' : '#ffffff',
+          color: isOpen ? '#ffffff' : '#000000',
+          cursor: 'pointer',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+          position: 'relative',
+          overflow: 'visible'
+        }}
       >
-        {isOpen ? <X size={18} /> : <MessageCircle size={20} />}
-        <span>AI Assistant</span>
+        {/* Animated pulsating halo behind the avatar */}
+        {!isOpen && (
+          <span 
+            className="absolute rounded-full" 
+            style={{
+              left: '12px',
+              width: '28px',
+              height: '28px',
+              background: 'rgba(0, 0, 0, 0.15)',
+              zIndex: 0,
+              animation: 'ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite'
+            }}
+          />
+        )}
+
+        <div style={{
+          width: '28px',
+          height: '28px',
+          borderRadius: '50%',
+          background: isOpen ? '#ffffff' : '#000000',
+          color: isOpen ? '#000000' : '#ffffff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1,
+          transition: 'all 0.3s ease'
+        }}>
+          {isOpen ? <X size={14} /> : <Brain size={14} className="animate-pulse" />}
+        </div>
+        
+        <span style={{ fontSize: '0.85rem', fontWeight: 700, zIndex: 1 }}>
+          {isOpen ? 'Close NOVA' : 'Ask NOVA AI'}
+        </span>
       </button>
 
       {isOpen && (

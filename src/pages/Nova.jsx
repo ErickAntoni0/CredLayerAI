@@ -3,17 +3,17 @@ import { Brain, Send, Loader2, Sparkles, RefreshCw, Zap, Shield, TrendingUp } fr
 import { useAiAssistant } from '../hooks/useAiAssistant'
 import { useAccount } from 'wagmi'
 import gsap from 'gsap'
-import latamImg from '../assets/latam1.jpg'
-import handsImg from '../assets/imageHands.webp'
-import creditCardImg from '../assets/credit_card_bg.png'
+import handsImg from '../assets/reputation_slide.png'
+import latamImg from '../assets/payments_slide.png'
+import creditCardImg from '../assets/loans_slide.png'
 import '../styles/ia.css'
 
 const QUICK_ACTIONS = [
-  { label: '¿Cuál es mi Trust Score?', message: '¿Cuál es mi Trust Score actual?' },
-  { label: '¿Soy elegible para crédito?', message: '¿Soy elegible para un microcrédito?' },
-  { label: 'Cómo subir mi score', message: '¿Cómo puedo mejorar mi Trust Score?' },
-  { label: 'Analiza mis pagos', message: 'Analiza mis pagos y dime cómo va mi historial financiero' },
-  { label: 'Ventajas de MXNB', message: '¿Cuáles son las ventajas de usar MXNB en Arbitrum?' },
+  { label: '📈 My Trust Score (ES/EN)', message: '¿Cuál es mi Trust Score actual? / What is my current Trust Score?' },
+  { label: '💸 Loan Eligibility', message: 'Am I eligible for a microloan based on my reputation?' },
+  { label: '🛡️ Improve Rating', message: 'How can I improve my on-chain reputation rating?' },
+  { label: '📊 Analyze Payments', message: 'Analiza mi historial de pagos en Sepolia' },
+  { label: '⬡ MXNB on Arbitrum', message: 'Explain the benefits of MXNB stablecoin on Arbitrum' },
 ]
 
 const STAT_ITEMS = [
@@ -262,11 +262,13 @@ export default function Nova() {
           {/* Messages viewport */}
           <div className="ia-messages-viewport">
             {messages.length === 0 && (
-              <div className="ia-empty-state">
-                <Sparkles size={24} style={{ color: '#0a0a0a' }} />
-                <p>
-                  Hola, soy NOVA. Pregúntame sobre tu Trust Score,<br />
-                  elegibilidad de crédito o finanzas en blockchain.
+              <div className="ia-empty-state" style={{ maxWidth: '400px', margin: 'auto', textAlign: 'center', padding: '2rem 1rem' }}>
+                <div style={{ display: 'inline-flex', padding: '12px', borderRadius: '50%', background: '#F3F4F6', marginBottom: '16px' }}>
+                  <Sparkles size={26} style={{ color: '#000000' }} />
+                </div>
+                <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#000000', marginBottom: '8px' }}>Chat with NOVA AI Assistant</h3>
+                <p style={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.5 }}>
+                  Hello! I am NOVA, your Web3 financial assistant. You can ask me questions in English or Spanish regarding your on-chain reputation, loan eligibility, Arbitrum Sepolia transaction details, and how the Trust Score works.
                 </p>
               </div>
             )}
